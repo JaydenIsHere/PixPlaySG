@@ -1,0 +1,30 @@
+.footer {
+    border-top: 4px #42E9E3 solid;
+    }
+ .createdBy {
+        display: block;
+        margin: 3rem;
+        color:white;
+      }
+
+.createdBy .span {
+        padding: 0 0.5rem;
+      }
+
+      .brand-name{
+        color: #42E9E3;
+      }
+  
+      @media screen and (max-width: 800px) {
+        .createdBy {
+            font-size: 1.2rem;
+          }
+      }
+
+      @media screen and (max-width: 450px) {
+        .createdBy {
+            font-size: 1rem;
+            padding:0;
+            margin: 10px 0;
+          }
+      }

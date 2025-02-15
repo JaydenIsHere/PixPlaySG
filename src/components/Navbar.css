@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;1,600&family=Nunito:wght@300;400;600&family=Roboto:wght@300;400;500;700&display=swap');
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30px 30px;
+  background: #000;
+  z-index: 10;
+}
+
+.header .logoImage {
+  width: 150px;
+  height: auto;
+  padding: 0 10px;
+}
+
+.header .logoImage img {
+  width: 100%;
+  object-fit: cover;
+}
+
+.header .logo {
+  font-weight: bolder;
+  color: #fff;
+  font-size: 2.7rem;
+}
+
+.header .logo span {
+  color: #D6193D;
+}
+
+.header .navbar a {
+  color: #fff;
+  padding: 1rem 1.2rem;
+  font-size: 1rem;
+}
+
+.header .navbar a:hover {
+  background: #D6193D;
+  border-radius: 5px;
+}
+
+#menu-btn {
+  font-size: 2rem;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 800px) {
+  #menu-btn {
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  #menu-btn.fa-times {
+    transform: rotate(180deg);
+  }
+
+  header {
+    padding: 1em;
+    z-index: 10;
+  }
+
+  header .navbar {
+    position: absolute;
+    top: 99%;
+    left: 0;
+    right: 0;
+    background: #111;
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+  }
+
+  header .navbar.active {
+    z-index: 10;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  header .navbar a {
+    display: block;
+    font-size: 2rem;
+    margin: 0.8rem 0;
+  }
+}
+
