@@ -1,0 +1,107 @@
+/* General Styles */
+.feature-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Left Side: Text */
+.feature-text-content {
+  flex: 1; /* Take up equal space */
+  padding-right: 20px; /* Add some spacing between text and carousel */
+}
+
+.feature-text-content h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #D6193D;
+}
+
+.feature-list h3 {
+  font-size: 2rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #42E9E3;
+}
+
+.feature-list p {
+  font-size: 1rem;
+  margin-bottom: 15px;
+  line-height: 1.4;
+  color: white; /* Set description text to white */
+}
+
+.feature-cta-button {
+  background-color: #D6193D;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 20px;
+}
+
+.feature-cta-button:hover {
+  background-color: #0056b3;
+}
+
+/* Right Side: Carousel */
+.feature-carousel {
+  position: relative;
+  width: 50%;
+  height: 700px; /* or your desired height */
+}
+
+.feature-carousel-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.feature-carousel-image.active {
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .feature-section {
+    flex:1;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .feature-text-content {
+    padding-right: 0;
+    margin-bottom: 20px; /* Add space between text and carousel */
+    text-align: center;
+    padding: 0 2rem ;
+  }
+
+  .feature-carousel {
+    position: relative; /* Keep it in the document flow */
+    width: 100%;
+    height: 500px; /* Adjust height for mobile */
+    margin-bottom: 20px; /* Add space below the carousel */
+  }
+  /* Adjust font sizes for mobile */
+  .feature-text-content h2 {
+    font-size: 2rem;
+  }
+
+  .feature-list h3 {
+    font-size: 1.5rem;
+  }
+
+  .feature-list p {
+    font-size: 0.9rem;
+  }
+}

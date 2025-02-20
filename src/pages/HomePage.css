@@ -11,7 +11,8 @@
   }
   
   .landing-title {
-    font-size: 5rem; /* Default size for large screens */
+    font-size: 3.8rem; /* Default size for large screens */
+    font-weight: 900;
     margin-bottom: 10px;
     color: #42E9E3;
     line-height: 80%;
@@ -86,7 +87,9 @@
     
     .landing-title {
       font-size: 5rem; /* Much smaller size for mobile */
-      line-height: 50%; /* Adjust line height for better spacing */
+      line-height: 100%; /* Adjust line height for better spacing */
+      margin: 0;
+      padding: 0;
     }
   
     .subtitle {

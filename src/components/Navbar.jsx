@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Navbar.css';
 import pixplaylogo from '../images/pixplaylogo-landscape.png';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'; // Use Link if you're using React Router
 
 const Navbar = () => {
   const [click, setClick] = useState(false);
@@ -23,11 +23,11 @@ const Navbar = () => {
 
   return (
     <header className='header'>
-      <Link to='/'>
+      <a href='/'>
         <div className='logoImage'>
           <img src={pixplaylogo} alt='PixPlay Logo' />
         </div>
-      </Link>
+      </a>
 
       <div
         id='menu-btn'
@@ -36,22 +36,33 @@ const Navbar = () => {
       ></div>
 
       <nav className={click ? 'navbar active' : 'navbar'}>
-        <Link
-          to='/'
+        <a
+          href='/#home' // Use #home if you have a home section
           onClick={() => {
             handleClose();
             scrollToSection('home'); // Ensure this works with your routing setup
           }}
         >
           Home
-        </Link>
-        {/* Add more links as needed */}
-        <Link to='/about' onClick={handleClose}>
-          About
-        </Link>
-        <Link to='/contact' onClick={handleClose}>
+        </a>
+        <a
+          href='/#service' // Use #service to match the id of the section
+          onClick={() => {
+            handleClose();
+            scrollToSection('service'); // Scroll to the service section
+          }}
+        >
+          Service
+        </a>
+        <a
+          href='/#contact' // Use #contact if you have a contact section
+          onClick={() => {
+            handleClose();
+            scrollToSection('contact'); // Ensure this works with your routing setup
+          }}
+        >
           Contact
-        </Link>
+        </a>
       </nav>
     </header>
   );
