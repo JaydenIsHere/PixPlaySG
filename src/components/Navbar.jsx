@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Navbar.css';
-import pixplaylogo from '../images/pixplaylogo-landscape.png';
+import pixplaylogo from '../images/plogo.png';
 import { Link } from 'react-router-dom'; // Use Link if you're using React Router
 
 const Navbar = () => {

@@ -46,7 +46,7 @@
 }
 
 .feature-cta-button:hover {
-  background-color: #0056b3;
+  background-color: #e3284a;
 }
 
 /* Right Side: Carousel */
@@ -74,34 +74,38 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .feature-section {
-    flex:1;
     flex-direction: column;
     padding: 20px;
   }
 
   .feature-text-content {
+    order: 2; /* Move text content below the carousel */
     padding-right: 0;
     margin-bottom: 20px; /* Add space between text and carousel */
     text-align: center;
-    padding: 0 2rem ;
+    padding: 0 2rem;
   }
 
   .feature-carousel {
-    position: relative; /* Keep it in the document flow */
+    order: 1; /* Move carousel above the text content */
     width: 100%;
     height: 500px; /* Adjust height for mobile */
     margin-bottom: 20px; /* Add space below the carousel */
   }
+
   /* Adjust font sizes for mobile */
   .feature-text-content h2 {
     font-size: 2rem;
   }
 
   .feature-list h3 {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 
   .feature-list p {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+  }
+  .feature-cta-button{
+    width: 100%;
   }
 }

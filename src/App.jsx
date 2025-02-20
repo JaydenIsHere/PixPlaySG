@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 
 import Service_overiew from './components/Service-overview';
+import CallToAction from './components/CallToAction';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Navbar />
       <HomePage />
       <Service_overiew/>
+      <CallToAction/>
       <Footer />
     </BrowserRouter>
   );

@@ -36,7 +36,11 @@ const FeaturesSection = () => {
           <h3>Outsourced Production Team</h3>
           <p>Comprehensive content production services (e.g., filming, editing, design, copywriting).</p>
         </div>
-        <button className="feature-cta-button">Learn More</button>
+        <a href="http://wa.me/+6593602418">
+        <button className="feature-cta-button">
+          Learn More
+          </button>
+          </a>
       </div>
 
       {/* Right Side: Carousel */}
@@ -50,7 +54,10 @@ const FeaturesSection = () => {
           />
         ))}
       </div>
+
     </section>
+  
+    
   );
 };
 
