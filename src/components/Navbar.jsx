@@ -52,8 +52,18 @@ const Navbar = () => {
             scrollToSection('service'); // Scroll to the service section
           }}
         >
-          Service
+          Services
         </a>
+        <a
+          href='/#steps' // Use #contact if you have a contact section
+          onClick={() => {
+            handleClose();
+            scrollToSection('steps'); // Ensure this works with your routing setup
+          }}
+        >
+          Steps
+        </a>
+
         <a
           href='/#contact' // Use #contact if you have a contact section
           onClick={() => {

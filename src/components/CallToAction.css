@@ -66,7 +66,7 @@
   
   @media (max-width: 768px) {
     .cta-section {
-      margin: 1rem auto; /* Smaller vertical margin for mobile */
+      margin: 1rem; /* Smaller vertical margin for mobile */
     }
   
     .cta-content h2 {
@@ -78,7 +78,7 @@
     }
   
     .cta-button {
-      font-size: 1rem;
-      padding: 12px 24px;
+      font-size: 0.6rem;
+      padding: 10px 18px;
     }
   }

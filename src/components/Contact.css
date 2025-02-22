@@ -1,0 +1,110 @@
+/* Contact Section Styles */
+.contact-section {
+    background-color: #000;
+    color: #fff;
+    padding: 80px 20px;
+    text-align: center;
+  }
+  
+  .contact-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .contact-content h2 {
+    color: #D6193D;
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+  }
+  
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+  
+  .social-icon {
+    color: #fff;
+    font-size: 2rem;
+    transition: color 0.3s ease;
+  }
+  
+  .social-icon:hover {
+    color: #D6193D;
+  }
+  
+  .email-container {
+    margin-bottom: 40px;
+  }
+  
+  .email-text {
+    font-size: 1.1rem;
+    color: #aaa;
+    margin-bottom: 10px;
+  }
+  
+  .email-link {
+    color: #fff;
+    font-size: 1.4rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .email-link:hover {
+    color: #D6193D;
+  }
+  
+  .cta-button {
+    background-color: #D6193D;
+    color: white;
+    padding: 18px 40px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .cta-button:hover {
+    background-color: #ff1a43;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(214, 25, 61, 0.3);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .contact-content h2 {
+      font-size: 2rem;
+    }
+  
+    .social-links {
+      gap: 20px;
+    }
+  
+    .social-icon {
+      font-size: 1.8rem;
+    }
+  
+    .email-link {
+      font-size: 1.2rem;
+    }
+  
+    .cta-button {
+      font-size: 1rem;
+      padding: 15px 30px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .contact-content h2 {
+      font-size: 1.8rem;
+    }
+    
+    .social-links {
+      flex-wrap: wrap;
+    }
+  }
