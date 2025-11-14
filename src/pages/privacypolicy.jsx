@@ -1,15 +1,15 @@
 export default function privacypolicy() {
   return (
-    <div
-      className="privacy-policy"
-      style={{
-        padding: "40px",
-        maxWidth: "900px",
-        margin: "0 auto",
-        color: "white",          // ✔ All text white
-        lineHeight: "1.7",
-      }}
-    >
+<div
+  className="privacy-policy"
+  style={{
+    padding: "100px 40px 40px 40px", // top padding increased to 100px
+    maxWidth: "900px",
+    margin: "0 auto",
+    color: "white",
+    lineHeight: "1.7",
+  }}
+>
       <h1 style={{ color: "white" }}>Privacy Policy</h1>
 
       <p>Last updated: {new Date().getFullYear()}</p>
