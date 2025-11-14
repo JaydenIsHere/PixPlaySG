@@ -7,7 +7,7 @@ import Service_overview from './components/Service-overview';
 import CallToAction from './components/CallToAction';
 import Testimonial from './components/Testimonial';
 import Contact from './components/Contact';
-import PrivacyPolicy from './pages/PrivacyPolicy';
+import PrivacyPolicy from './pages/privacypolicy';
 
 function App() {
   return (
