@@ -5,7 +5,7 @@ import {
   STAGE_INFO,
   TOFU_FORMATS,
   TOFU_ANGLES,
-  HOOK_OPTIONS,
+  getHookOptions,
   FRAMEWORKS,
   CTAS,
 } from '../../data/scriptSystemData';
@@ -26,13 +26,13 @@ function getFieldsForStage(stage) {
   ];
 }
 
-function getFieldOptions(key, stage) {
+function getFieldOptions(key, stage, businessType) {
   if (key === 'format') return TOFU_FORMATS;
   if (key === 'hook') {
     if (stage === 'TOFU') {
       return TOFU_ANGLES.map((a) => ({ name: a.name, desc: a.desc, example: a.example }));
     }
-    return HOOK_OPTIONS;
+    return getHookOptions(businessType);
   }
   if (key === 'framework') return FRAMEWORKS[stage];
   if (key === 'cta') return CTAS[stage].map((c) => ({ name: c }));
@@ -42,6 +42,7 @@ function getFieldOptions(key, stage) {
 export default function StepThreeGenerator({ onNext }) {
   const [identity] = useLocalState('ss_identity', DEFAULT_IDENTITY);
   const [topic, setTopic] = useLocalState('ss_topic', '');
+  const [businessType] = useLocalState('ss_businessType', 'service');
   const [stage, setStage] = useState('MOFU');
   const fields = useMemo(() => getFieldsForStage(stage), [stage]);
   const [selection, setSelection] = useState({ format: 0, hook: 0, framework: 0, cta: 0 });
@@ -56,9 +57,12 @@ export default function StepThreeGenerator({ onNext }) {
     setSelection({ format: 0, hook: 0, framework: 0, cta: 0 });
     setActiveField(freshFields[0].key);
     setSearch('');
-  }, [stage]);
+  }, [stage, businessType]);
 
-  const activeOptions = useMemo(() => getFieldOptions(activeField, stage), [activeField, stage]);
+  const activeOptions = useMemo(
+    () => getFieldOptions(activeField, stage, businessType),
+    [activeField, stage, businessType]
+  );
   const filteredOptions = useMemo(() => {
     if (!search.trim()) return activeOptions.map((opt, i) => ({ ...opt, i }));
     const q = search.toLowerCase();
@@ -68,6 +72,7 @@ export default function StepThreeGenerator({ onNext }) {
         if (isPsychologyHook) {
           return (
             opt.principle.name.toLowerCase().includes(q) ||
+            opt.principle.part.toLowerCase().includes(q) ||
             opt.principle.psychology.toLowerCase().includes(q) ||
             opt.example.toLowerCase().includes(q)
           );
@@ -101,7 +106,9 @@ export default function StepThreeGenerator({ onNext }) {
     }
   };
 
-  const pickedFor = (key) => getFieldOptions(key, stage)[selection[key]] || getFieldOptions(key, stage)[0];
+  const pickedFor = (key) =>
+    getFieldOptions(key, stage, businessType)[selection[key]] ||
+    getFieldOptions(key, stage, businessType)[0];
   const hook = pickedFor('hook');
   const cta = pickedFor('cta');
   const format = stage === 'TOFU' ? pickedFor('format') : null;
