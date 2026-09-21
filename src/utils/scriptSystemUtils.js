@@ -1,4 +1,4 @@
-import { BUSINESS_TYPES, FRAMEWORKS, TOFU_ANGLES, STAGES } from '../data/scriptSystemData';
+import { BUSINESS_TYPES, FRAMEWORKS, TOFU_ANGLES, STAGES, STAGE_INFO } from '../data/scriptSystemData';
 
 function frameworkNameFor(stage, index) {
   if (stage === 'TOFU') return TOFU_ANGLES[index % TOFU_ANGLES.length].name;
@@ -21,6 +21,42 @@ export function buildIdentityBlock(form) {
 Target audience: ${form.audience || '[your target audience]'}
 Core promise/transformation: ${form.promise || '[what result you help them get]'}
 Tone of voice: ${form.tone || '[your tone, e.g. warm and direct]'}`;
+}
+
+// The example lines shown in the hook/angle picker are illustrations of the strategy
+// for the user's own understanding — they're not written for this buyer's business, so
+// the final prompt describes the *strategy* instead of injecting that unrelated text.
+export function buildHookStrategyLine({ stage, hookName, hookDesc, hookPsychology, hookApplication }) {
+  if (stage === 'TOFU') return `Angle: ${hookName} — ${hookDesc}`;
+  return `Hook strategy (${hookName}): ${hookPsychology} ${hookApplication}`;
+}
+
+export function buildScriptPrompt({ identity, topic, stage, hookStrategyLine, format, framework, ctaText }) {
+  if (stage === 'TOFU') {
+    return `Using the following brand identity, write short-form content.
+
+${buildIdentityBlock(identity)}
+
+Topic: ${topic || '[your topic from Step 2]'}
+Content stage: TOFU — ${STAGE_INFO.TOFU.desc}
+Format: ${format.name}
+${hookStrategyLine}
+Call to action: "${ctaText}"
+
+${format.writingInstruction} Match the tone of voice above.`;
+  }
+
+  return `Using the following brand identity, write a short-form video script.
+
+${buildIdentityBlock(identity)}
+
+Topic: ${topic || '[your topic from Step 2]'}
+Content stage: ${stage} — ${STAGE_INFO[stage].desc}
+${hookStrategyLine}
+Script framework: ${framework.name} — ${framework.desc}
+Call to action: "${ctaText}"
+
+Write the full script (hook, body, CTA) in a natural spoken style that matches the tone of voice above. Keep it tight enough for a 30-60 second short-form video.`;
 }
 
 function buildWeekPattern(ratio, postsPerWeek) {
@@ -47,6 +83,10 @@ function buildWeekPattern(ratio, postsPerWeek) {
   return order;
 }
 
+// A simple alternating suggestion, not an exhaustive list — buyers swap it for
+// whatever actually fits once they download and plan against their real content.
+const SUGGESTED_FORMATS = ['Video', 'Carousel'];
+
 export function generateCalendar({ businessTypeKey, postsPerWeek, totalDays = 60 }) {
   const ratio = BUSINESS_TYPES[businessTypeKey].ratio;
   const weekPattern = buildWeekPattern(ratio, postsPerWeek);
@@ -59,27 +99,32 @@ export function generateCalendar({ businessTypeKey, postsPerWeek, totalDays = 60
 
   const frameworkCursor = { TOFU: 0, MOFU: 0, BOFU: 0 };
   let patternIndex = 0;
+  let formatCursor = 0;
   const days = [];
 
   for (let day = 1; day <= totalDays; day++) {
     const weekday = (day - 1) % 7;
     if (!postDaysOfWeek.has(weekday)) {
-      days.push({ day, type: 'rest', stage: null });
+      days.push({ day, kind: 'rest', stage: null });
       continue;
     }
     const stage = weekPattern[patternIndex % weekPattern.length];
     patternIndex++;
     const framework = frameworkNameFor(stage, frameworkCursor[stage]);
     frameworkCursor[stage]++;
-    days.push({ day, type: 'post', stage, framework });
+    const format = SUGGESTED_FORMATS[formatCursor % SUGGESTED_FORMATS.length];
+    formatCursor++;
+    days.push({ day, kind: 'post', stage, framework, format, topicText: '' });
   }
   return days;
 }
 
 export function calendarToCSV(days) {
-  const header = ['Day', 'Type', 'Stage', 'Suggested framework', 'Your topic (fill in from your grid)'];
+  const header = ['Day', 'Type', 'Stage', 'Suggested framework', 'Your topic'];
   const rows = days.map((d) =>
-    d.type === 'rest' ? [d.day, 'Rest / engage with comments', '', '', ''] : [d.day, 'Post', d.stage, d.framework, '']
+    d.kind === 'rest'
+      ? [d.day, 'Rest / engage with comments', '', '', '']
+      : [d.day, d.format, d.stage, d.framework, d.topicText || '']
   );
   return [header, ...rows]
     .map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
@@ -99,13 +144,14 @@ export function calendarToICS(days, startDate) {
   const stamp = formatICSDate(new Date()) + 'T000000Z';
 
   days
-    .filter((d) => d.type === 'post')
+    .filter((d) => d.kind === 'post')
     .forEach((d) => {
       const eventDate = new Date(startDate);
       eventDate.setDate(eventDate.getDate() + (d.day - 1));
       const dateStr = formatICSDate(eventDate);
       const nextDay = new Date(eventDate);
       nextDay.setDate(nextDay.getDate() + 1);
+      const topicLine = d.topicText ? `Topic: ${d.topicText}` : 'Topic: fill in from your 64-topic grid';
 
       lines.push(
         'BEGIN:VEVENT',
@@ -113,8 +159,8 @@ export function calendarToICS(days, startDate) {
         `DTSTAMP:${stamp}`,
         `DTSTART;VALUE=DATE:${dateStr}`,
         `DTEND;VALUE=DATE:${formatICSDate(nextDay)}`,
-        `SUMMARY:Day ${d.day} — ${d.stage} post (${d.framework})`,
-        `DESCRIPTION:Stage: ${d.stage}\\nFramework: ${d.framework}\\nTopic: fill in from your 64-topic grid`,
+        `SUMMARY:Day ${d.day} — ${d.stage} ${d.format} (${d.framework})`,
+        `DESCRIPTION:Format: ${d.format}\\nStage: ${d.stage}\\nFramework: ${d.framework}\\n${topicLine}`,
         'END:VEVENT'
       );
     });

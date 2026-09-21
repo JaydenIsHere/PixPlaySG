@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useLocalState } from './useLocalState';
 import { BUSINESS_TYPES } from '../../data/scriptSystemData';
-import { generateCalendar, calendarToCSV, calendarToICS, downloadTextFile } from '../../utils/scriptSystemUtils';
+import {
+  generateCalendar,
+  calendarToCSV,
+  calendarToICS,
+  downloadTextFile,
+} from '../../utils/scriptSystemUtils';
 
 function tomorrowISODate() {
   const d = new Date();
@@ -22,6 +27,10 @@ export default function BonusCalendar() {
 
   const handleGenerate = () => {
     setDays(generateCalendar({ businessTypeKey: businessType, postsPerWeek }));
+  };
+
+  const updateDay = (day, patch) => {
+    setDays((prev) => prev.map((d) => (d.day === day ? { ...d, ...patch } : d)));
   };
 
   const handleDownloadCSV = () => {
@@ -49,6 +58,21 @@ export default function BonusCalendar() {
         Step 2 as you go.
       </p>
 
+      <div className="ss-cheatsheet-block">
+        <h3 className="ss-grid9-title">Quick Reference Cheat Sheet</h3>
+        <p className="ss-step-intro">
+          A one-page summary of TOFU/MOFU/BOFU, the content ratios, and every psychology hook
+          category &mdash; save it to your phone or print it for a glance-able reminder.
+        </p>
+        <a
+          className="ss-btn ss-btn-outline"
+          href="/downloads/strategic-script-system-cheatsheet.pdf"
+          download
+        >
+          Download the Cheat Sheet (PDF)
+        </a>
+      </div>
+
       <div className="ss-field">
         <label>How many days a week do you want to post?</label>
         <select value={postsPerWeek} onChange={(e) => setPostsPerWeek(Number(e.target.value))}>
@@ -69,6 +93,11 @@ export default function BonusCalendar() {
 
       {days && (
         <>
+          <p className="ss-hint">
+            Type, Stage, and Framework here are starting suggestions, not fixed rules &mdash; once
+            you download this, change anything to fit your actual content plan and business
+            direction.
+          </p>
           <div className="ss-table-wrap">
             <table className="ss-table">
               <thead>
@@ -82,12 +111,22 @@ export default function BonusCalendar() {
               </thead>
               <tbody>
                 {days.map((d) => (
-                  <tr key={d.day} className={d.type === 'rest' ? 'ss-row-rest' : ''}>
+                  <tr key={d.day} className={d.kind === 'rest' ? 'ss-row-rest' : ''}>
                     <td>{d.day}</td>
-                    <td>{d.type === 'rest' ? 'Rest / engage' : 'Post'}</td>
+                    <td>{d.kind === 'post' ? d.format : ''}</td>
                     <td>{d.stage || '—'}</td>
                     <td>{d.framework || '—'}</td>
-                    <td className="ss-fillin">fill in</td>
+                    <td>
+                      {d.kind === 'post' && (
+                        <input
+                          type="text"
+                          className="ss-table-input"
+                          value={d.topicText}
+                          onChange={(e) => updateDay(d.day, { topicText: e.target.value })}
+                          placeholder="Your topic"
+                        />
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>

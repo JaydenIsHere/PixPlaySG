@@ -3,13 +3,18 @@ import { useLocalState } from './useLocalState';
 import {
   STAGES,
   STAGE_INFO,
+  BUSINESS_TYPES,
   TOFU_FORMATS,
   TOFU_ANGLES,
   getHookOptions,
   FRAMEWORKS,
   CTAS,
 } from '../../data/scriptSystemData';
-import { DEFAULT_IDENTITY, buildIdentityBlock } from '../../utils/scriptSystemUtils';
+import {
+  DEFAULT_IDENTITY,
+  buildHookStrategyLine,
+  buildScriptPrompt,
+} from '../../utils/scriptSystemUtils';
 
 function getFieldsForStage(stage) {
   if (stage === 'TOFU') {
@@ -115,39 +120,23 @@ export default function StepThreeGenerator({ onNext }) {
   const framework = stage !== 'TOFU' ? pickedFor('framework') : null;
   const hookName = stage === 'TOFU' ? hook.name : hook.principle.name;
 
-  // The example lines shown in the picker are illustrations of the strategy for the
-  // user's own understanding — they're not written for this buyer's business, so the
-  // final prompt describes the *strategy* instead of injecting that unrelated (and,
-  // for TOFU angles, placeholder-templated) example text.
-  const hookStrategyLine =
-    stage === 'TOFU'
-      ? `Angle: ${hookName} — ${hook.desc}`
-      : `Hook strategy (${hookName}): ${hook.principle.psychology} ${hook.principle.application}`;
+  const hookStrategyLine = buildHookStrategyLine({
+    stage,
+    hookName,
+    hookDesc: hook.desc,
+    hookPsychology: hook.principle?.psychology,
+    hookApplication: hook.principle?.application,
+  });
 
-  const prompt =
-    stage === 'TOFU'
-      ? `Using the following brand identity, write short-form content.
-
-${buildIdentityBlock(identity)}
-
-Topic: ${topic || '[your topic from Step 2]'}
-Content stage: TOFU — ${STAGE_INFO.TOFU.desc}
-Format: ${format.name}
-${hookStrategyLine}
-Call to action: "${cta.name}"
-
-${format.writingInstruction} Match the tone of voice above.`
-      : `Using the following brand identity, write a short-form video script.
-
-${buildIdentityBlock(identity)}
-
-Topic: ${topic || '[your topic from Step 2]'}
-Content stage: ${stage} — ${STAGE_INFO[stage].desc}
-${hookStrategyLine}
-Script framework: ${framework.name} — ${framework.desc}
-Call to action: "${cta.name}"
-
-Write the full script (hook, body, CTA) in a natural spoken style that matches the tone of voice above. Keep it tight enough for a 30-60 second short-form video.`;
+  const prompt = buildScriptPrompt({
+    identity,
+    topic,
+    stage,
+    hookStrategyLine,
+    format,
+    framework,
+    ctaText: cta.name,
+  });
 
   const handleCopy = () => {
     navigator.clipboard.writeText(prompt);
@@ -176,6 +165,13 @@ Write the full script (hook, body, CTA) in a natural spoken style that matches t
           rows={2}
         />
       </div>
+
+      <p className="ss-hint ss-businesstype-reminder">
+        You set up as a <strong>{BUSINESS_TYPES[businessType].label}</strong> in Step 2 — aim for
+        TOFU {BUSINESS_TYPES[businessType].ratio.TOFU}% / MOFU{' '}
+        {BUSINESS_TYPES[businessType].ratio.MOFU}% / BOFU {BUSINESS_TYPES[businessType].ratio.BOFU}%
+        overall.
+      </p>
 
       <div className="ss-field">
         <label>Content stage</label>

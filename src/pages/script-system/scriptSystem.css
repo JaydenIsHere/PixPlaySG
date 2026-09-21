@@ -184,6 +184,19 @@
   margin-top: 6px;
 }
 
+.ss-businesstype-reminder {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--ss-glass-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 0 0 20px;
+  color: #ccc;
+}
+
+.ss-businesstype-reminder strong {
+  color: var(--ss-red);
+}
+
 .ss-stage-toggle {
   display: flex;
   gap: 10px;
@@ -322,6 +335,18 @@
   flex-wrap: wrap;
 }
 
+.ss-cheatsheet-block {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--ss-glass-border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 26px;
+}
+
+.ss-cheatsheet-block .ss-step-intro {
+  margin-bottom: 16px;
+}
+
 /* --- outputs / buttons --- */
 
 .ss-output {
@@ -368,6 +393,7 @@
 }
 
 .ss-btn {
+  display: inline-block;
   background: linear-gradient(135deg, var(--ss-red), var(--ss-red-dim));
   color: #fff;
   border: none;
@@ -377,6 +403,7 @@
   font-size: 1rem;
   font-weight: 700;
   box-shadow: 0 8px 24px rgba(214, 25, 61, 0.3);
+  text-align: center;
 }
 
 .ss-btn:hover {
@@ -604,9 +631,19 @@
   color: #666;
 }
 
-.ss-fillin {
-  color: #555;
-  font-style: italic;
+.ss-table-input {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--ss-glass-border);
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  min-width: 220px;
+  width: 100%;
+}
+
+.ss-table-input:focus {
+  border-color: var(--ss-red);
 }
 
 .ss-footer {
