@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -8,11 +8,16 @@ import CallToAction from './components/CallToAction';
 import Testimonial from './components/Testimonial';
 import Contact from './components/Contact';
 import PrivacyPolicy from './pages/privacypolicy';
+import ScriptSystemAccess from './pages/script-system/ScriptSystemAccess';
 
-function App() {
+function AppShell() {
+  const location = useLocation();
+  // The gated product page stands alone — no public nav/footer linking back to the marketing site.
+  const isStandalonePage = location.pathname.startsWith('/access');
+
   return (
-    <BrowserRouter>
-      <Navbar />
+    <>
+      {!isStandalonePage && <Navbar />}
 
       <Routes>
         {/* Home - your one-page sections */}
@@ -32,9 +37,20 @@ function App() {
 
         {/* Privacy Policy Page */}
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+
+        {/* Strategic Script System - unlisted, buyer-only access page. Not linked from the navbar or sitemap. */}
+        <Route path="/access" element={<ScriptSystemAccess />} />
       </Routes>
 
-      <Footer />
+      {!isStandalonePage && <Footer />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppShell />
     </BrowserRouter>
   );
 }
