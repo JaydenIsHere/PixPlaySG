@@ -35,7 +35,7 @@ export default function ScriptSystemAccess() {
       <LicenseGate bypass={Boolean(previewName)} onUnlock={setBuyerEmail}>
         {watermarkLabel && (
           <div className="ss-watermark">
-            Prepared for {watermarkLabel} — licensed for personal use only. Please don&apos;t
+            Prepared for {watermarkLabel}. Licensed for personal use only, please don&apos;t
             share this link.
           </div>
         )}

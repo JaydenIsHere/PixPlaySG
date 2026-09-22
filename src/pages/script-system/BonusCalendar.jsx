@@ -57,7 +57,7 @@ export default function BonusCalendar() {
 
   return (
     <div className="ss-step">
-      <h2>Bonus — Your First 60-Day Calendar</h2>
+      <h2>Bonus: Your First 60-Day Calendar</h2>
       <p className="ss-step-intro">
         Generates a 60-day posting rhythm using your business type&apos;s ratio (
         {BUSINESS_TYPES[businessType].label}: {BUSINESS_TYPES[businessType].ratio.TOFU}/
@@ -70,7 +70,7 @@ export default function BonusCalendar() {
         <h3 className="ss-grid9-title">Quick Reference Cheat Sheet</h3>
         <p className="ss-step-intro">
           A one-page summary of TOFU/MOFU/BOFU, the content ratios, and every psychology hook
-          category &mdash; save it to your phone or print it for a glance-able reminder.
+          category. Save it to your phone or print it for a glance-able reminder.
         </p>
         <a
           className="ss-btn ss-btn-outline"
@@ -102,8 +102,8 @@ export default function BonusCalendar() {
       {days && (
         <>
           <p className="ss-hint">
-            Type, Stage, and Framework here are starting suggestions, not fixed rules &mdash; once
-            you download this, change anything to fit your actual content plan and business
+            Type, Stage, and Framework here are starting suggestions, not fixed rules. Once you
+            download this, change anything to fit your actual content plan and business
             direction.
           </p>
           <div className="ss-table-wrap">
@@ -122,8 +122,8 @@ export default function BonusCalendar() {
                   <tr key={d.day} className={d.kind === 'rest' ? 'ss-row-rest' : ''}>
                     <td>{d.day}</td>
                     <td>{d.kind === 'post' ? d.format : ''}</td>
-                    <td>{d.stage || '—'}</td>
-                    <td>{d.framework || '—'}</td>
+                    <td>{d.stage || '-'}</td>
+                    <td>{d.framework || '-'}</td>
                     <td>
                       {d.kind === 'post' && (
                         <input

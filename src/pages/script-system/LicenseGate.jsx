@@ -43,10 +43,10 @@ export default function LicenseGate({ bypass, onUnlock, children }) {
       } else {
         // A config/network problem on our end (e.g. missing secret key) —
         // never tell the buyer their key is wrong when it might be our fault.
-        setErrorMsg('Something went wrong on our end — please try again shortly, or contact support if it keeps happening.');
+        setErrorMsg('Something went wrong on our end. Please try again shortly, or contact support if it keeps happening.');
       }
     } catch {
-      setErrorMsg('Could not verify right now — please try again in a moment.');
+      setErrorMsg('Could not verify right now. Please try again in a moment.');
     } finally {
       setChecking(false);
     }

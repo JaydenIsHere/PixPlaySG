@@ -36,7 +36,7 @@ Tone of voice: ${form.tone || '[your tone, e.g. warm and direct]'}`;
 // for the user's own understanding — they're not written for this buyer's business, so
 // the final prompt describes the *strategy* instead of injecting that unrelated text.
 export function buildHookStrategyLine({ stage, hookName, hookDesc, hookPsychology, hookApplication }) {
-  if (stage === 'TOFU') return `Angle: ${hookName} — ${hookDesc}`;
+  if (stage === 'TOFU') return `Angle: ${hookName}. ${hookDesc}`;
   return `Hook strategy (${hookName}): ${hookPsychology} ${hookApplication}`;
 }
 
@@ -47,7 +47,7 @@ export function buildScriptPrompt({ identity, topic, stage, hookStrategyLine, fo
 ${buildIdentityBlock(identity)}
 
 Topic: ${topic || '[your topic from Step 2]'}
-Content stage: TOFU — ${STAGE_INFO.TOFU.desc}
+Content stage: TOFU. ${STAGE_INFO.TOFU.desc}
 Format: ${format.name}
 ${hookStrategyLine}
 Call to action: "${ctaText}"
@@ -57,17 +57,17 @@ ${format.writingInstruction} Match the tone of voice above.`;
 
   const closingInstruction =
     stage === 'MOFU'
-      ? "Write the full script (hook, body, CTA) in a natural spoken style that matches the tone of voice above. This isn't a sales pitch — the goal is to build trust and familiarity, so prioritize being genuine, convincing, and likeable over being brief. Give it room to breathe: aim for about 1-2 minutes."
-      : 'Write the full script (hook, body, CTA) in a natural spoken style that matches the tone of voice above. Keep it tight and punchy, to the point — 30-60 seconds.';
+      ? "Write the full script (hook, body, CTA) in a natural spoken style that matches the tone of voice above. This isn't a sales pitch. The goal is to build trust and familiarity, so prioritize being genuine, convincing, and likeable over being brief. Give it room to breathe: aim for about 1-2 minutes."
+      : 'Write the full script (hook, body, CTA) in a natural spoken style that matches the tone of voice above. Keep it tight, punchy, and to the point, within 30-60 seconds.';
 
   return `Using the following brand identity, write a short-form video script.
 
 ${buildIdentityBlock(identity)}
 
 Topic: ${topic || '[your topic from Step 2]'}
-Content stage: ${stage} — ${STAGE_INFO[stage].desc}
+Content stage: ${stage}. ${STAGE_INFO[stage].desc}
 ${hookStrategyLine}
-Script framework: ${framework.name} — ${framework.desc}
+Script framework: ${framework.name}. ${framework.desc}
 Call to action: "${ctaText}"
 
 ${closingInstruction}`;
@@ -173,7 +173,7 @@ export function calendarToICS(days, startDate) {
         `DTSTAMP:${stamp}`,
         `DTSTART;VALUE=DATE:${dateStr}`,
         `DTEND;VALUE=DATE:${formatICSDate(nextDay)}`,
-        `SUMMARY:Day ${d.day} — ${d.stage} ${d.format} (${d.framework})`,
+        `SUMMARY:Day ${d.day}: ${d.stage} ${d.format} (${d.framework})`,
         `DESCRIPTION:Format: ${d.format}\\nStage: ${d.stage}\\nFramework: ${d.framework}\\n${topicLine}`,
         'END:VEVENT'
       );
@@ -226,7 +226,7 @@ Client Retention & Lifetime Value
 
 Core Needs & Pain Points
 - What's the #1 urgent problem driving this group to look for a solution?
-- What outcome do they value most — speed, cost savings, safety, prestige?
+- What outcome do they value most: speed, cost savings, safety, prestige?
 
 Customization & Positioning
 - How does your offer need to be tailored or explained differently for this group?
@@ -244,10 +244,10 @@ export function buildTopicGenerationPrompt({ identity, terminology, audience, bu
 
 I use a 9-square grid method to plan content. Here are my two grids:
 
-Grid 1 — Industry terminology relevant to my business:
+Grid 1 (industry terminology relevant to my business):
 ${listOrPlaceholder(terminology, 'terminology')}
 
-Grid 2 — My 8 main target customer/client types:
+Grid 2 (my 8 main target customer/client types):
 ${listOrPlaceholder(audience, 'audience type')}
 
 For each of the 8 target customer types, generate 8 short-form video topic ideas (64 total) that connect to the terminology above and speak directly to that audience's situation.
@@ -354,7 +354,7 @@ export function exportGridsAsPNG({ terminology, audience, businessName, filename
     x: padding,
     y: cursorY,
     width: width - padding * 2,
-    title: 'Grid 1 — Industry Terminology',
+    title: 'Grid 1: Industry Terminology',
     centerLabel: businessName || 'Your business',
     values: terminology,
   });
@@ -364,7 +364,7 @@ export function exportGridsAsPNG({ terminology, audience, businessName, filename
     x: padding,
     y: cursorY,
     width: width - padding * 2,
-    title: 'Grid 2 — Target Customer Types',
+    title: 'Grid 2: Target Customer Types',
     centerLabel: businessName || 'Your business',
     values: audience,
   });

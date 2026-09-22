@@ -2,17 +2,17 @@ export const STAGES = ['TOFU', 'MOFU', 'BOFU'];
 
 export const STAGE_INFO = {
   TOFU: {
-    label: 'TOFU — Attract',
+    label: 'TOFU: Attract',
     desc: 'Reach new people who may not know your business yet.',
     infoTitle: 'Why TOFU goes viral',
     points: [
       { name: 'Broad appeal', desc: 'Focuses on universal themes, human psychology, or big problems rather than deep product details.' },
-      { name: 'Low friction', desc: 'Requires zero commitment to consume — no long reading, no sales pitch, just instant value or entertainment.' },
+      { name: 'Low friction', desc: 'Requires zero commitment to consume: no long reading, no sales pitch, just instant value or entertainment.' },
       { name: 'High shareability', desc: 'People share content that makes them feel understood, smart, or amused.' },
     ],
   },
   MOFU: {
-    label: 'MOFU — Build Trust',
+    label: 'MOFU: Build Trust',
     desc: 'Build interest, trust, and understanding.',
     infoTitle: 'What MOFU content does',
     points: [
@@ -22,7 +22,7 @@ export const STAGE_INFO = {
     ],
   },
   BOFU: {
-    label: 'BOFU — Convert',
+    label: 'BOFU: Convert',
     desc: 'Help the right people make a buying decision.',
     infoTitle: 'What BOFU content does',
     points: [
@@ -41,7 +41,7 @@ export const BUSINESS_TYPES = {
 export const TOFU_FORMATS = [
   {
     name: 'Short-Form Video',
-    desc: 'Reels, TikTok, Shorts — quick, punchy clips with a strong hook.',
+    desc: 'Reels, TikTok, Shorts: quick, punchy clips with a strong hook.',
     writingInstruction:
       'Write this as a spoken short-form video script: a punchy 1-2 line hook, a body that delivers the angle in plain spoken language, then the CTA. Keep it tight enough to say out loud in 30-60 seconds.',
   },
@@ -49,7 +49,7 @@ export const TOFU_FORMATS = [
     name: 'Listicles & Carousels',
     desc: 'Easy-to-swipe slides sharing secrets or mistakes in your niche.',
     writingInstruction:
-      'Write this as a swipeable carousel: Slide 1 is the hook (the angle above), each following slide gives one short, punchy point, and the final slide is the CTA. Keep every slide to one short sentence — carousels are read, not spoken, so no long paragraphs.',
+      'Write this as a swipeable carousel: Slide 1 is the hook (the angle above), each following slide gives one short, punchy point, and the final slide is the CTA. Keep every slide to one short sentence, since carousels are read, not spoken, so no long paragraphs.',
   },
   {
     name: 'Relatable Memes or Skits',
@@ -95,7 +95,7 @@ export const PSYCHOLOGY_HOOKS = [
     businessType: 'universal',
     psychology: 'When uncertain, people look at what others are doing to validate their decisions.',
     application: 'Show real people, high numbers, or relatable client case studies using your solution.',
-    examples: ['Over 400 business owners downloaded this exact lead framework last month — here is why everyone is switching to it.'],
+    examples: ['Over 400 business owners downloaded this exact lead framework last month. Here is why everyone is switching to it.'],
   },
   {
     part: 'Trust, Risk Mitigation & Authority',
@@ -243,7 +243,7 @@ export const PSYCHOLOGY_HOOKS = [
     businessType: 'universal',
     psychology: 'People are driven by choices that elevate their social or professional status among peers.',
     application: 'Frame your strategy as the professional, high-level way to run a business.',
-    examples: ["This isn't just about getting views — it's about positioning your brand as the #1 authority in your niche."],
+    examples: ["This isn't just about getting views. It's about positioning your brand as the #1 authority in your niche."],
   },
   {
     part: 'Behavioral Loops & Action Triggers',
@@ -290,7 +290,7 @@ export const PSYCHOLOGY_HOOKS = [
     part: 'Product-Specific: Sensory & Value Perception',
     name: 'Aesthetic-Usability Effect',
     businessType: 'product',
-    psychology: 'People perceive attractive, well-designed products as more functional and higher quality — often before ever trying them.',
+    psychology: 'People perceive attractive, well-designed products as more functional and higher quality, often before ever trying them.',
     application: 'Lead with clean, well-shot product/packaging visuals and let the visual polish imply quality, rather than explaining features first.',
     examples: ["Look at this design for a second... you already know this thing works well before I even tell you what it does."],
   },
@@ -298,24 +298,24 @@ export const PSYCHOLOGY_HOOKS = [
     part: 'Product-Specific: Sensory & Value Perception',
     name: 'Price-Quality Heuristic',
     businessType: 'product',
-    psychology: 'In the absence of other information, people use price as a stand-in for quality — a higher price implies a better product.',
+    psychology: 'In the absence of other information, people use price as a stand-in for quality: a higher price implies a better product.',
     application: 'Justify a premium price by showing materials, ingredients, or craftsmanship on camera instead of apologizing for the cost.',
-    examples: ["This isn't a $5 candle. Here's exactly why it's $32 — and why that's still a steal."],
+    examples: ["This isn't a $5 candle. Here's exactly why it's $32, and why that's still a steal."],
   },
   {
     part: 'Product-Specific: Sensory & Value Perception',
     name: 'Unboxing & Anticipation-Reward',
     businessType: 'product',
     psychology: 'Watching a reveal builds real anticipation and triggers a dopamine reward in the viewer, even vicariously.',
-    application: 'Slow down the reveal moment — packaging, first look, first use — instead of cutting straight to the product.',
+    application: 'Slow down the reveal moment (packaging, first look, first use) instead of cutting straight to the product.',
     examples: ["Wait for it... (peels back the tissue paper) ...this is what $58 of skincare actually looks like."],
   },
   {
     part: 'Product-Specific: Sensory & Value Perception',
     name: 'Bandwagon Effect',
     businessType: 'product',
-    psychology: "Distinct from general social proof — people want something more once they see it's already trending or selling out, not just liked.",
-    application: 'Show visible momentum — sold-out badges, restock counters, "back in stock" — rather than just testimonials.',
+    psychology: "Distinct from general social proof: people want something more once they see it's already trending or selling out, not just liked.",
+    application: 'Show visible momentum (sold-out badges, restock counters, "back in stock") rather than just testimonials.',
     examples: ['This scent sold out in 6 hours last restock. We just got 200 more back in stock.'],
   },
 ];
@@ -380,11 +380,11 @@ export const CTAS = {
     "Comment '[KEYWORD]' and I'll DM you the link",
     'Tap the link in bio to get started',
     'Tap the button below to start now',
-    'Book a call — link in bio',
+    'Book a call, link in bio',
     'DM me to get started',
     'Tap the button below to claim your spot',
-    'Shop now — link in bio',
+    'Shop now, link in bio',
     'Send us a message to get started',
-    'Limited spots — link in bio to join',
+    'Limited spots, link in bio to join',
   ],
 };

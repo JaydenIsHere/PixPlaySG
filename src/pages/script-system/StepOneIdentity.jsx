@@ -14,7 +14,7 @@ export default function StepOneIdentity({ onNext }) {
 
   return (
     <div className="ss-step">
-      <h2>Step 1 — Brand &amp; Audience Foundation</h2>
+      <h2>Step 1: Brand &amp; Audience Foundation</h2>
 
       <div className="ss-video-wrap">
         {TUTORIAL_VIDEO_URL ? (
@@ -32,9 +32,9 @@ export default function StepOneIdentity({ onNext }) {
       </div>
 
       <p className="ss-step-intro">
-        Fill this in once. It&apos;s saved automatically in this browser — come back anytime and
-        it&apos;ll still be here — and it&apos;s reused behind the scenes in every prompt from here on,
-        so everything you generate keeps sounding like you.
+        Fill this in once. It&apos;s saved automatically in this browser, so you can come back
+        anytime and it&apos;ll still be here, and it&apos;s reused behind the scenes in every prompt
+        from here on, so everything you generate keeps sounding like you.
       </p>
 
       <div className="ss-field">

@@ -167,20 +167,20 @@ export default function StepThreeGenerator({ onNext }) {
 
   return (
     <div className="ss-step">
-      <h2>Step 3 — Script Cards</h2>
+      <h2>Step 3: Script Cards</h2>
 
       <div className="ss-field ss-big-topic">
         <label className="ss-topic-label">Your topic</label>
         <textarea
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
-          placeholder="Type or paste a topic — switch it anytime without leaving this step"
+          placeholder="Type or paste a topic, switch it anytime without leaving this step"
           rows={2}
         />
       </div>
 
       <p className="ss-hint ss-businesstype-reminder">
-        You set up as a <strong>{BUSINESS_TYPES[businessType].label}</strong> in Step 2 — aim for
+        You set up as a <strong>{BUSINESS_TYPES[businessType].label}</strong> in Step 2, aim for
         TOFU {BUSINESS_TYPES[businessType].ratio.TOFU}% / MOFU{' '}
         {BUSINESS_TYPES[businessType].ratio.MOFU}% / BOFU {BUSINESS_TYPES[businessType].ratio.BOFU}%
         overall.
@@ -283,7 +283,7 @@ export default function StepThreeGenerator({ onNext }) {
 
       <div className={`ss-output ${ctaConfirmed ? 'ready' : ''}`}>
         <div className="ss-output-header">
-          <span>Your final AI prompt{ctaConfirmed ? ' — ready to use!' : ''}</span>
+          <span>Your final AI prompt{ctaConfirmed ? ', ready to use!' : ''}</span>
           <button className="ss-copy-btn" onClick={handleCopy}>
             {copied ? 'Copied!' : 'Copy'}
           </button>

@@ -67,7 +67,7 @@ export default function StepTwoTopics({ onNext }) {
 
   return (
     <div className="ss-step">
-      <h2>Step 2 — Get Your Topic</h2>
+      <h2>Step 2: Get Your Topic</h2>
       <p className="ss-step-intro">Do you already have a topic you want to film?</p>
 
       <div className="ss-stage-toggle ss-yesno-toggle">
@@ -103,7 +103,7 @@ export default function StepTwoTopics({ onNext }) {
         <>
           <p className="ss-step-intro">
             Fill in both grids below, then export them and run the prompt in your own AI tool
-            (ChatGPT, Gemini, Claude — whichever you use) to get your 64 topics. Once you&apos;ve
+            (ChatGPT, Gemini, or Claude, whichever you use) to get your 64 topics. Once you&apos;ve
             picked one, come back and paste it into the box below.
           </p>
 
@@ -123,7 +123,7 @@ export default function StepTwoTopics({ onNext }) {
           </div>
 
           <Grid9
-            title="Grid 1 — Industry Terminology"
+            title="Grid 1: Industry Terminology"
             centerLabel={identity.business || 'Your business'}
             values={terminology}
             onChange={setTerminology}
@@ -131,14 +131,14 @@ export default function StepTwoTopics({ onNext }) {
           />
 
           <p className="ss-step-intro ss-brainstorm-spaced">
-            Not sure what terminology to use? Work through this question set — answer straight
+            Not sure what terminology to use? Work through this question set. Answer straight
             into the grid yourself, or copy it into your AI tool and let it suggest terms from
             your answers.
           </p>
           <QuestionSetBlock label="Terminology question set" content={terminologyQuestions} />
 
           <Grid9
-            title="Grid 2 — Target Customer Types"
+            title="Grid 2: Target Customer Types"
             centerLabel={identity.business || 'Your business'}
             values={audience}
             onChange={setAudience}
@@ -146,7 +146,7 @@ export default function StepTwoTopics({ onNext }) {
           />
 
           <p className="ss-step-intro ss-brainstorm-spaced">
-            Not sure who your target audiences are? Work through this question set — answer
+            Not sure who your target audiences are? Work through this question set. Answer
             straight into the grid yourself, or copy it into your AI tool and let it suggest
             audience types from your answers.
           </p>
@@ -154,7 +154,7 @@ export default function StepTwoTopics({ onNext }) {
 
           <p className="ss-step-intro ss-brainstorm-spaced">
             Once both grids are filled in, use the buttons below to copy the prompt or download
-            it as an image for generating your 64 topics. Your grids are saved automatically —
+            it as an image for generating your 64 topics. Your grids are saved automatically, so
             come back anytime your business changes and update them.
           </p>
           <div className="ss-export-row">
