@@ -181,6 +181,44 @@ export function downloadTextFile(content, filename, mime = 'text/csv;charset=utf
   URL.revokeObjectURL(url);
 }
 
+// A categorized question set per grid — for the buyer to think through themselves,
+// not an AI prompt. They can either write their own answers straight into the grid
+// cells, or copy their answers into an AI tool if they'd rather have it suggest terms.
+export function buildQuestionSet(kind) {
+  if (kind === 'terminology') {
+    return `Core Identity & Signature Approach
+- What's your signature framework or step-by-step process for getting clients results?
+- What outcome or transformation do you want to be known for?
+- What core method or philosophy sets you apart from the standard approach in your field?
+
+Lead Acquisition & Market Attraction
+- What do you use to turn strangers into prospects (e.g. consultation, free audit, lead magnet)?
+- What problem or desire first makes someone start searching for your service?
+- What terms or phrases do prospects search for when looking for help like yours?
+
+Core Value & Product Offerings
+- What are your main packages or signature services called?
+- What tangible result or system do clients walk away with?
+- What's a lighter or mid-tier option you offer besides your main service?
+
+Client Retention & Lifetime Value
+- What long-term benefit do clients get from staying with you?
+- What recurring service keeps clients engaged after their first problem is solved?
+- What costly mistake or risk do you help clients avoid over time?`;
+  }
+  return `Demographics & Stage of Life/Business
+- What distinct groups of people or businesses buy from you?
+- What life or business milestone are they going through right now?
+
+Core Needs & Pain Points
+- What's the #1 urgent problem driving this group to look for a solution?
+- What outcome do they value most — speed, cost savings, safety, prestige?
+
+Customization & Positioning
+- How does your offer need to be tailored or explained differently for this group?
+- What objection does this group raise that your other customers usually don't?`;
+}
+
 export function buildTopicGenerationPrompt({ identity, terminology, audience, businessTypeKey }) {
   const ratio = BUSINESS_TYPES[businessTypeKey].ratio;
   const listOrPlaceholder = (arr, label) =>

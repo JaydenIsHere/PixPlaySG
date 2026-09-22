@@ -5,10 +5,32 @@ import { BUSINESS_TYPES } from '../../data/scriptSystemData';
 import {
   DEFAULT_IDENTITY,
   buildTopicGenerationPrompt,
+  buildQuestionSet,
   exportGridsAsPNG,
 } from '../../utils/scriptSystemUtils';
 
 const EMPTY_GRID = Array(8).fill('');
+
+function QuestionSetBlock({ label, content }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="ss-output ss-brainstorm-inline">
+      <div className="ss-output-header">
+        <span>{label}</span>
+        <button className="ss-copy-btn" onClick={handleCopy}>
+          {copied ? 'Copied!' : 'Copy'}
+        </button>
+      </div>
+      <pre>{content}</pre>
+    </div>
+  );
+}
 
 export default function StepTwoTopics({ onNext }) {
   const [identity] = useLocalState('ss_identity', DEFAULT_IDENTITY);
@@ -20,6 +42,8 @@ export default function StepTwoTopics({ onNext }) {
   const [copied, setCopied] = useState(false);
 
   const prompt = buildTopicGenerationPrompt({ identity, terminology, audience, businessTypeKey: businessType });
+  const terminologyQuestions = buildQuestionSet('terminology');
+  const audienceQuestions = buildQuestionSet('audience');
 
   const handleCopy = () => {
     navigator.clipboard.writeText(prompt);
@@ -88,23 +112,41 @@ export default function StepTwoTopics({ onNext }) {
             </p>
           </div>
 
-          <div className="ss-grid-stack">
-            <Grid9
-              title="Grid 1 — Industry Terminology"
-              centerLabel={identity.business || 'Your business'}
-              values={terminology}
-              onChange={setTerminology}
-              placeholderPrefix="Term"
-            />
-            <Grid9
-              title="Grid 2 — Target Customer Types"
-              centerLabel={identity.business || 'Your business'}
-              values={audience}
-              onChange={setAudience}
-              placeholderPrefix="Audience"
-            />
-          </div>
+          <Grid9
+            title="Grid 1 — Industry Terminology"
+            centerLabel={identity.business || 'Your business'}
+            values={terminology}
+            onChange={setTerminology}
+            placeholderPrefix="Term"
+          />
 
+          <p className="ss-step-intro ss-brainstorm-spaced">
+            Not sure what terminology to use? Work through this question set — answer straight
+            into the grid yourself, or copy it into your AI tool and let it suggest terms from
+            your answers.
+          </p>
+          <QuestionSetBlock label="Terminology question set" content={terminologyQuestions} />
+
+          <Grid9
+            title="Grid 2 — Target Customer Types"
+            centerLabel={identity.business || 'Your business'}
+            values={audience}
+            onChange={setAudience}
+            placeholderPrefix="Audience"
+          />
+
+          <p className="ss-step-intro ss-brainstorm-spaced">
+            Not sure who your target audiences are? Work through this question set — answer
+            straight into the grid yourself, or copy it into your AI tool and let it suggest
+            audience types from your answers.
+          </p>
+          <QuestionSetBlock label="Target audience question set" content={audienceQuestions} />
+
+          <p className="ss-step-intro ss-brainstorm-spaced">
+            Once both grids are filled in, use the buttons below to copy the prompt or download
+            it as an image for generating your 64 topics. Your grids are saved automatically —
+            come back anytime your business changes and update them.
+          </p>
           <div className="ss-export-row">
             <button className="ss-btn" onClick={handleCopy} type="button">
               {copied ? 'Copied!' : 'Copy prompt as text'}

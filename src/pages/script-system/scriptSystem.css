@@ -222,13 +222,6 @@
 
 /* --- 9-square grids --- */
 
-.ss-grid-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  margin-bottom: 8px;
-}
-
 .ss-yesno-toggle button {
   font-weight: 600;
   font-size: 0.95rem;
@@ -288,6 +281,7 @@
   border: 1px solid var(--ss-glass-border);
   border-radius: 16px;
   padding: 18px;
+  margin-bottom: 8px;
 }
 
 .ss-grid9-title {
@@ -345,6 +339,14 @@
 
 .ss-cheatsheet-block .ss-step-intro {
   margin-bottom: 16px;
+}
+
+.ss-brainstorm-inline {
+  margin-bottom: 24px;
+}
+
+.ss-brainstorm-spaced {
+  margin-top: 30px;
 }
 
 /* --- outputs / buttons --- */
