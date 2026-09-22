@@ -37,8 +37,13 @@ export default function LicenseGate({ bypass, onUnlock, children }) {
         }
         onUnlock?.(data.buyerEmail);
         setUnlocked(true);
-      } else {
+      } else if (res.status === 401) {
+        // A real rejection from Payhip — the key itself is wrong or disabled.
         setErrorMsg("That key didn't work. Double-check it and try again.");
+      } else {
+        // A config/network problem on our end (e.g. missing secret key) —
+        // never tell the buyer their key is wrong when it might be our fault.
+        setErrorMsg('Something went wrong on our end — please try again shortly, or contact support if it keeps happening.');
       }
     } catch {
       setErrorMsg('Could not verify right now — please try again in a moment.');
