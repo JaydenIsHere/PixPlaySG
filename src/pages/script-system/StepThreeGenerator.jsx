@@ -48,12 +48,13 @@ export default function StepThreeGenerator({ onNext }) {
   const [identity] = useLocalState('ss_identity', DEFAULT_IDENTITY);
   const [topic, setTopic] = useLocalState('ss_topic', '');
   const [businessType] = useLocalState('ss_businessType', 'service');
-  const [stage, setStage] = useState('MOFU');
+  const [stage, setStage] = useState('TOFU');
   const fields = useMemo(() => getFieldsForStage(stage), [stage]);
   const [selection, setSelection] = useState({ format: 0, hook: 0, framework: 0, cta: 0 });
   const [activeField, setActiveField] = useState(fields[0].key);
   const [search, setSearch] = useState('');
   const [copied, setCopied] = useState(false);
+  const [ctaConfirmed, setCtaConfirmed] = useState(false);
 
   const isPsychologyHook = activeField === 'hook' && stage !== 'TOFU';
 
@@ -62,6 +63,7 @@ export default function StepThreeGenerator({ onNext }) {
     setSelection({ format: 0, hook: 0, framework: 0, cta: 0 });
     setActiveField(freshFields[0].key);
     setSearch('');
+    setCtaConfirmed(false);
   }, [stage, businessType]);
 
   const activeOptions = useMemo(
@@ -103,6 +105,7 @@ export default function StepThreeGenerator({ onNext }) {
 
   const handlePick = (i) => {
     setSelection((prev) => ({ ...prev, [activeField]: i }));
+    if (activeField === 'cta') setCtaConfirmed(true);
     const currentIdx = fields.findIndex((f) => f.key === activeField);
     const next = fields[currentIdx + 1];
     if (next) {
@@ -150,6 +153,16 @@ export default function StepThreeGenerator({ onNext }) {
     if (key === 'cta') return cta.name;
     if (key === 'hook') return hookName;
     return '';
+  };
+
+  const handleRestart = () => {
+    if (!window.confirm('Clear your selections in Step 3 and start over?')) return;
+    setStage('TOFU');
+    setSelection({ format: 0, hook: 0, framework: 0, cta: 0 });
+    setActiveField(getFieldsForStage('TOFU')[0].key);
+    setSearch('');
+    setCtaConfirmed(false);
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
   };
 
   return (
@@ -231,13 +244,6 @@ export default function StepThreeGenerator({ onNext }) {
             {isPsychologyHook &&
               groupedHookOptions.map((group) => (
                 <div key={group.principleIdx} className="ss-option-group">
-                  <div className="ss-option-divider">
-                    <span className="ss-option-divider-name">
-                      {group.principle.name}
-                      {group.principle.subtitle ? ` (${group.principle.subtitle})` : ''}
-                    </span>
-                    <span className="ss-option-divider-blurb">{group.principle.psychology}</span>
-                  </div>
                   {group.items.map((opt) => (
                     <button
                       key={`${opt.principleIdx}-${opt.exampleIdx}`}
@@ -245,7 +251,12 @@ export default function StepThreeGenerator({ onNext }) {
                       className={`ss-option ss-option-hook ${selection.hook === opt.i ? 'selected' : ''}`}
                       onClick={() => handlePick(opt.i)}
                     >
-                      &quot;{opt.example}&quot;
+                      <span className="ss-option-hook-title">
+                        {group.principle.name}
+                        {group.principle.subtitle ? ` (${group.principle.subtitle})` : ''}
+                      </span>
+                      <span className="ss-option-hook-desc">{group.principle.psychology}</span>
+                      <span className="ss-option-hook-example">E.g. &quot;{opt.example}&quot;</span>
                     </button>
                   ))}
                 </div>
@@ -270,9 +281,9 @@ export default function StepThreeGenerator({ onNext }) {
         </div>
       </div>
 
-      <div className="ss-output">
+      <div className={`ss-output ${ctaConfirmed ? 'ready' : ''}`}>
         <div className="ss-output-header">
-          <span>Your final AI prompt</span>
+          <span>Your final AI prompt{ctaConfirmed ? ' — ready to use!' : ''}</span>
           <button className="ss-copy-btn" onClick={handleCopy}>
             {copied ? 'Copied!' : 'Copy'}
           </button>
@@ -280,9 +291,14 @@ export default function StepThreeGenerator({ onNext }) {
         <pre>{prompt}</pre>
       </div>
 
-      <button className="ss-btn ss-btn-next" onClick={onNext} type="button">
-        Next: Bonus Calendar →
-      </button>
+      <div className="ss-bottom-actions">
+        <button className="ss-btn ss-btn-next" onClick={onNext} type="button">
+          Next: Bonus Calendar →
+        </button>
+        <button className="ss-restart-btn" onClick={handleRestart} type="button">
+          Restart
+        </button>
+      </div>
     </div>
   );
 }

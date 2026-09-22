@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import LicenseGate from './LicenseGate';
 import StepOneIdentity from './StepOneIdentity';
@@ -22,6 +22,13 @@ export default function ScriptSystemAccess() {
   const [activeTab, setActiveTab] = useState(1);
   const [buyerEmail, setBuyerEmail] = useState(null);
   const watermarkLabel = previewName || buyerEmail;
+
+  // Scrolling here (after the new tab's content has actually mounted) instead of
+  // inside the click handler avoids landing mid-page when the new step is a
+  // different height than the one being left.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab]);
 
   return (
     <div className="ss-page">

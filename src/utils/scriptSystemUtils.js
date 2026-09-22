@@ -5,7 +5,14 @@ function frameworkNameFor(stage, index) {
   return FRAMEWORKS[stage][index % FRAMEWORKS[stage].length].name;
 }
 
-export const DEFAULT_IDENTITY = { business: '', audience: '', promise: '', tone: '' };
+export const DEFAULT_IDENTITY = {
+  business: '',
+  audience: '',
+  region: '',
+  edge: '',
+  promise: '',
+  tone: '',
+};
 
 export function toYouTubeEmbedUrl(url) {
   if (!url) return '';
@@ -19,6 +26,8 @@ export function toYouTubeEmbedUrl(url) {
 export function buildIdentityBlock(form) {
   return `Business/niche: ${form.business || '[your business/niche]'}
 Target audience: ${form.audience || '[your target audience]'}
+Region/market: ${form.region || '[where your customers are, e.g. Singapore, US, worldwide]'}
+Competitive edge: ${form.edge || '[why customers pick you over other options]'}
 Core promise/transformation: ${form.promise || '[what result you help them get]'}
 Tone of voice: ${form.tone || '[your tone, e.g. warm and direct]'}`;
 }
@@ -46,6 +55,11 @@ Call to action: "${ctaText}"
 ${format.writingInstruction} Match the tone of voice above.`;
   }
 
+  const closingInstruction =
+    stage === 'MOFU'
+      ? "Write the full script (hook, body, CTA) in a natural spoken style that matches the tone of voice above. This isn't a sales pitch — the goal is to build trust and familiarity, so prioritize being genuine, convincing, and likeable over being brief. Give it room to breathe: aim for about 1-2 minutes."
+      : 'Write the full script (hook, body, CTA) in a natural spoken style that matches the tone of voice above. Keep it tight and punchy, to the point — 30-60 seconds.';
+
   return `Using the following brand identity, write a short-form video script.
 
 ${buildIdentityBlock(identity)}
@@ -56,7 +70,7 @@ ${hookStrategyLine}
 Script framework: ${framework.name} — ${framework.desc}
 Call to action: "${ctaText}"
 
-Write the full script (hook, body, CTA) in a natural spoken style that matches the tone of voice above. Keep it tight enough for a 30-60 second short-form video.`;
+${closingInstruction}`;
 }
 
 function buildWeekPattern(ratio, postsPerWeek) {

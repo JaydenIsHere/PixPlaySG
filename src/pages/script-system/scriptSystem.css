@@ -131,10 +131,39 @@
   margin-bottom: 10px;
 }
 
+.ss-bottom-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.ss-restart-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--ss-glass-border);
+  color: #999;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ss-restart-btn:hover {
+  border-color: var(--ss-red);
+  color: var(--ss-red);
+}
+
 .ss-step-intro {
-  color: #a8a8a8;
+  background: #f2f2f2;
+  color: #111;
   line-height: 1.65;
   margin-bottom: 28px;
+  padding: 14px 18px;
+  border-radius: 10px;
 }
 
 .ss-inline-link {
@@ -200,6 +229,7 @@
 .ss-stage-toggle {
   display: flex;
   gap: 10px;
+  margin-bottom: 20px;
 }
 
 .ss-stage-toggle button {
@@ -357,6 +387,12 @@
   border: 1px solid var(--ss-glass-border);
   border-radius: 14px;
   overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ss-output.ready {
+  border-color: var(--ss-red);
+  box-shadow: 0 0 24px rgba(214, 25, 61, 0.4);
 }
 
 .ss-output-header {
@@ -566,38 +602,33 @@
 .ss-option-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-
-.ss-option-divider {
-  padding: 10px 12px 4px;
+  gap: 6px;
+  padding-top: 10px;
   border-top: 1px solid var(--ss-glass-border);
   margin-top: 6px;
 }
 
-.ss-option-group:first-child .ss-option-divider {
+.ss-option-group:first-child {
+  padding-top: 0;
   border-top: none;
   margin-top: 0;
 }
 
-.ss-option-divider-name {
-  display: block;
+.ss-option-hook-title {
   color: var(--ss-red);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
-.ss-option-divider-blurb {
-  display: block;
-  color: #888;
-  font-size: 0.75rem;
+.ss-option-hook-desc {
+  color: #eee;
+  font-size: 0.8rem;
   line-height: 1.4;
-  margin-top: 2px;
 }
 
-.ss-option-hook {
-  color: #eee;
-  font-size: 0.88rem;
+.ss-option-hook-example {
+  color: #888;
+  font-size: 0.75rem;
   font-style: italic;
   line-height: 1.4;
 }

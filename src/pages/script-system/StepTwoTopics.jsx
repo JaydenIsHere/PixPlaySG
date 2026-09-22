@@ -55,6 +55,16 @@ export default function StepTwoTopics({ onNext }) {
     exportGridsAsPNG({ terminology, audience, businessName: identity.business });
   };
 
+  const handleRestart = () => {
+    if (!window.confirm('Clear everything in Step 2 and start over?')) return;
+    setBusinessType('service');
+    setTerminology(EMPTY_GRID);
+    setAudience(EMPTY_GRID);
+    setHasTopic(null);
+    setTopic('');
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  };
+
   return (
     <div className="ss-step">
       <h2>Step 2 — Get Your Topic</h2>
@@ -168,11 +178,16 @@ export default function StepTwoTopics({ onNext }) {
         </>
       )}
 
-      {hasTopic !== null && (
-        <button className="ss-btn ss-btn-next" onClick={onNext} type="button">
-          Next: Build Your Script →
+      <div className="ss-bottom-actions">
+        {hasTopic !== null && (
+          <button className="ss-btn ss-btn-next" onClick={onNext} type="button">
+            Next: Build Your Script →
+          </button>
+        )}
+        <button className="ss-restart-btn" onClick={handleRestart} type="button">
+          Restart
         </button>
-      )}
+      </div>
     </div>
   );
 }

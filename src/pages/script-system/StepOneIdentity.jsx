@@ -6,6 +6,12 @@ export default function StepOneIdentity({ onNext }) {
   const [form, setForm] = useLocalState('ss_identity', DEFAULT_IDENTITY);
   const handleChange = (field) => (e) => setForm({ ...form, [field]: e.target.value });
 
+  const handleRestart = () => {
+    if (!window.confirm('Clear everything in Step 1 and start over?')) return;
+    setForm(DEFAULT_IDENTITY);
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  };
+
   return (
     <div className="ss-step">
       <h2>Step 1 — Brand &amp; Audience Foundation</h2>
@@ -50,12 +56,30 @@ export default function StepOneIdentity({ onNext }) {
         />
       </div>
       <div className="ss-field">
+        <label>What region or country are you targeting?</label>
+        <input
+          type="text"
+          value={form.region || ''}
+          onChange={handleChange('region')}
+          placeholder="e.g. Singapore, US, Southeast Asia, worldwide"
+        />
+      </div>
+      <div className="ss-field">
         <label>What&apos;s the core promise or transformation you deliver?</label>
         <input
           type="text"
           value={form.promise}
           onChange={handleChange('promise')}
           placeholder="e.g. Retire without relying on your kids or the government"
+        />
+      </div>
+      <div className="ss-field">
+        <label>Why should customers choose you over other options?</label>
+        <input
+          type="text"
+          value={form.edge || ''}
+          onChange={handleChange('edge')}
+          placeholder="e.g. Only CFP in the region specializing in early retirement for couples"
         />
       </div>
       <div className="ss-field">
@@ -68,9 +92,14 @@ export default function StepOneIdentity({ onNext }) {
         />
       </div>
 
-      <button className="ss-btn ss-btn-next" onClick={onNext} type="button">
-        Next: Generate Your Topics →
-      </button>
+      <div className="ss-bottom-actions">
+        <button className="ss-btn ss-btn-next" onClick={onNext} type="button">
+          Next: Generate Your Topics →
+        </button>
+        <button className="ss-restart-btn" onClick={handleRestart} type="button">
+          Restart
+        </button>
+      </div>
     </div>
   );
 }

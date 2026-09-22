@@ -33,6 +33,14 @@ export default function BonusCalendar() {
     setDays((prev) => prev.map((d) => (d.day === day ? { ...d, ...patch } : d)));
   };
 
+  const handleRestart = () => {
+    if (!window.confirm('Clear your generated calendar and start over?')) return;
+    setPostsPerWeek(5);
+    setStartDate(tomorrowISODate());
+    setDays(null);
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  };
+
   const handleDownloadCSV = () => {
     if (!days) return;
     downloadTextFile(calendarToCSV(days), 'my-60-day-content-calendar.csv');
@@ -143,6 +151,12 @@ export default function BonusCalendar() {
           </div>
         </>
       )}
+
+      <div className="ss-bottom-actions">
+        <button className="ss-restart-btn" onClick={handleRestart} type="button">
+          Restart
+        </button>
+      </div>
     </div>
   );
 }
