@@ -773,7 +773,7 @@
 
 @media (max-width: 800px) {
   .ss-two-col {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .ss-col-right {
