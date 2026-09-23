@@ -325,8 +325,10 @@ export const PSYCHOLOGY_HOOKS = [
 // principle later needs no changes outside this list.
 // businessTypeKey: 'product' | 'service' | undefined/other → shows universal + that type.
 // Falls back to the full list if the business type hasn't been set yet.
-export function getHookOptions(businessTypeKey) {
-  const principles = PSYCHOLOGY_HOOKS.filter(
+// customHooks: buyer-authored hooks (same shape, always businessType 'universal') appended
+// after the built-in list so they show up for every business type.
+export function getHookOptions(businessTypeKey, customHooks = []) {
+  const principles = [...PSYCHOLOGY_HOOKS, ...customHooks].filter(
     (p) => !businessTypeKey || p.businessType === 'universal' || p.businessType === businessTypeKey
   );
   return principles.flatMap((principle, principleIdx) =>

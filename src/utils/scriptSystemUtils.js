@@ -195,6 +195,43 @@ export function downloadTextFile(content, filename, mime = 'text/csv;charset=utf
   URL.revokeObjectURL(url);
 }
 
+export function readTextFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(file);
+  });
+}
+
+export const DEFAULT_CUSTOM_LIBRARY = { angles: [], hooks: [], frameworks: { MOFU: [], BOFU: [] } };
+
+export function buildCustomLibraryExport({ angles, hooks, frameworks }) {
+  return JSON.stringify({ version: 1, angles, hooks, frameworks }, null, 2);
+}
+
+// Merges an imported library into the buyer's current one, skipping anything that
+// shares a name with an existing entry so re-importing (or importing on a second
+// device that already has some overlap) never duplicates or overwrites their work.
+export function mergeCustomLibrary(current, imported) {
+  const mergeList = (currentList, importedList) => {
+    const existingNames = new Set(currentList.map((item) => item.name.trim().toLowerCase()));
+    const additions = (importedList || []).filter(
+      (item) => item && item.name && !existingNames.has(item.name.trim().toLowerCase())
+    );
+    return [...currentList, ...additions];
+  };
+
+  return {
+    angles: mergeList(current.angles, imported.angles),
+    hooks: mergeList(current.hooks, imported.hooks),
+    frameworks: {
+      MOFU: mergeList(current.frameworks.MOFU, imported.frameworks?.MOFU),
+      BOFU: mergeList(current.frameworks.BOFU, imported.frameworks?.BOFU),
+    },
+  };
+}
+
 // A categorized question set per grid — for the buyer to think through themselves,
 // not an AI prompt. They can either write their own answers straight into the grid
 // cells, or copy their answers into an AI tool if they'd rather have it suggest terms.

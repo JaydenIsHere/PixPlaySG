@@ -14,7 +14,13 @@ import {
   DEFAULT_IDENTITY,
   buildHookStrategyLine,
   buildScriptPrompt,
+  buildCustomLibraryExport,
+  mergeCustomLibrary,
+  downloadTextFile,
+  readTextFile,
 } from '../../utils/scriptSystemUtils';
+
+const EMPTY_ADD_FORM = { name: '', subtitle: '', desc: '', psychology: '', application: '', example: '' };
 
 function getFieldsForStage(stage) {
   if (stage === 'TOFU') {
@@ -31,15 +37,20 @@ function getFieldsForStage(stage) {
   ];
 }
 
-function getFieldOptions(key, stage, businessType) {
+function getFieldOptions(key, stage, businessType, customs) {
   if (key === 'format') return TOFU_FORMATS;
   if (key === 'hook') {
     if (stage === 'TOFU') {
-      return TOFU_ANGLES.map((a) => ({ name: a.name, desc: a.desc, example: a.example }));
+      return [...TOFU_ANGLES, ...customs.angles].map((a) => ({
+        name: a.name,
+        desc: a.desc,
+        example: a.example,
+        isCustom: a.isCustom,
+      }));
     }
-    return getHookOptions(businessType);
+    return getHookOptions(businessType, customs.hooks);
   }
-  if (key === 'framework') return FRAMEWORKS[stage];
+  if (key === 'framework') return [...FRAMEWORKS[stage], ...(customs.frameworks[stage] || [])];
   if (key === 'cta') return CTAS[stage].map((c) => ({ name: c }));
   return [];
 }
@@ -55,8 +66,25 @@ export default function StepThreeGenerator({ onNext }) {
   const [search, setSearch] = useState('');
   const [copied, setCopied] = useState(false);
   const [ctaConfirmed, setCtaConfirmed] = useState(false);
+  const [customAngles, setCustomAngles] = useLocalState('ss_custom_angles', []);
+  const [customHooks, setCustomHooks] = useLocalState('ss_custom_hooks', []);
+  const [customFrameworks, setCustomFrameworks] = useLocalState('ss_custom_frameworks', {
+    MOFU: [],
+    BOFU: [],
+  });
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addForm, setAddForm] = useState(EMPTY_ADD_FORM);
+  const [importError, setImportError] = useState('');
+  const customs = { angles: customAngles, hooks: customHooks, frameworks: customFrameworks };
 
   const isPsychologyHook = activeField === 'hook' && stage !== 'TOFU';
+
+  const changeActiveField = (key) => {
+    setActiveField(key);
+    setSearch('');
+    setShowAddForm(false);
+    setAddForm(EMPTY_ADD_FORM);
+  };
 
   useEffect(() => {
     const freshFields = getFieldsForStage(stage);
@@ -64,11 +92,14 @@ export default function StepThreeGenerator({ onNext }) {
     setActiveField(freshFields[0].key);
     setSearch('');
     setCtaConfirmed(false);
+    setShowAddForm(false);
+    setAddForm(EMPTY_ADD_FORM);
   }, [stage, businessType]);
 
   const activeOptions = useMemo(
-    () => getFieldOptions(activeField, stage, businessType),
-    [activeField, stage, businessType]
+    () => getFieldOptions(activeField, stage, businessType, customs),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- customs is rebuilt from these same fields every render
+    [activeField, stage, businessType, customAngles, customHooks, customFrameworks]
   );
   const filteredOptions = useMemo(() => {
     if (!search.trim()) return activeOptions.map((opt, i) => ({ ...opt, i }));
@@ -79,7 +110,7 @@ export default function StepThreeGenerator({ onNext }) {
         if (isPsychologyHook) {
           return (
             opt.principle.name.toLowerCase().includes(q) ||
-            opt.principle.part.toLowerCase().includes(q) ||
+            (opt.principle.part || '').toLowerCase().includes(q) ||
             opt.principle.psychology.toLowerCase().includes(q) ||
             opt.example.toLowerCase().includes(q)
           );
@@ -108,15 +139,12 @@ export default function StepThreeGenerator({ onNext }) {
     if (activeField === 'cta') setCtaConfirmed(true);
     const currentIdx = fields.findIndex((f) => f.key === activeField);
     const next = fields[currentIdx + 1];
-    if (next) {
-      setActiveField(next.key);
-      setSearch('');
-    }
+    if (next) changeActiveField(next.key);
   };
 
   const pickedFor = (key) =>
-    getFieldOptions(key, stage, businessType)[selection[key]] ||
-    getFieldOptions(key, stage, businessType)[0];
+    getFieldOptions(key, stage, businessType, customs)[selection[key]] ||
+    getFieldOptions(key, stage, businessType, customs)[0];
   const hook = pickedFor('hook');
   const cta = pickedFor('cta');
   const format = stage === 'TOFU' ? pickedFor('format') : null;
@@ -163,6 +191,94 @@ export default function StepThreeGenerator({ onNext }) {
     setSearch('');
     setCtaConfirmed(false);
     requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  };
+
+  const handleAddCustom = () => {
+    const name = addForm.name.trim();
+    if (!name) return;
+
+    if (activeField === 'hook' && stage === 'TOFU') {
+      if (customAngles.some((a) => a.name.toLowerCase() === name.toLowerCase())) {
+        window.alert('You already have a custom hook with that name.');
+        return;
+      }
+      setCustomAngles((prev) => [
+        ...prev,
+        { name, desc: addForm.desc.trim(), example: addForm.example.trim(), isCustom: true },
+      ]);
+    } else if (activeField === 'hook') {
+      if (customHooks.some((h) => h.name.toLowerCase() === name.toLowerCase())) {
+        window.alert('You already have a custom hook with that name.');
+        return;
+      }
+      setCustomHooks((prev) => [
+        ...prev,
+        {
+          name,
+          subtitle: addForm.subtitle.trim(),
+          businessType: 'universal',
+          psychology: addForm.psychology.trim(),
+          application: addForm.application.trim(),
+          examples: [addForm.example.trim()],
+          isCustom: true,
+        },
+      ]);
+    } else if (activeField === 'framework') {
+      const list = customFrameworks[stage] || [];
+      if (list.some((f) => f.name.toLowerCase() === name.toLowerCase())) {
+        window.alert('You already have a custom script flow with that name.');
+        return;
+      }
+      setCustomFrameworks((prev) => ({
+        ...prev,
+        [stage]: [...(prev[stage] || []), { name, desc: addForm.desc.trim(), isCustom: true }],
+      }));
+    }
+
+    setAddForm(EMPTY_ADD_FORM);
+    setShowAddForm(false);
+  };
+
+  const handleDeleteCustomAngle = (name) => {
+    setCustomAngles((prev) => prev.filter((a) => a.name !== name));
+    setSelection((prev) => ({ ...prev, hook: 0 }));
+  };
+
+  const handleDeleteCustomHook = (name) => {
+    setCustomHooks((prev) => prev.filter((h) => h.name !== name));
+    setSelection((prev) => ({ ...prev, hook: 0 }));
+  };
+
+  const handleDeleteCustomFramework = (stageKey, name) => {
+    setCustomFrameworks((prev) => ({
+      ...prev,
+      [stageKey]: (prev[stageKey] || []).filter((f) => f.name !== name),
+    }));
+    setSelection((prev) => ({ ...prev, framework: 0 }));
+  };
+
+  const handleExportLibrary = () => {
+    const json = buildCustomLibraryExport({ angles: customAngles, hooks: customHooks, frameworks: customFrameworks });
+    downloadTextFile(json, 'my-custom-hooks.json', 'application/json;charset=utf-8;');
+  };
+
+  const handleImportLibrary = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    setImportError('');
+    try {
+      const imported = JSON.parse(await readTextFile(file));
+      const merged = mergeCustomLibrary(
+        { angles: customAngles, hooks: customHooks, frameworks: customFrameworks },
+        imported
+      );
+      setCustomAngles(merged.angles);
+      setCustomHooks(merged.hooks);
+      setCustomFrameworks(merged.frameworks);
+    } catch {
+      setImportError("Couldn't read that file. Make sure it's a custom-hooks export from this tool.");
+    }
   };
 
   return (
@@ -214,6 +330,22 @@ export default function StepThreeGenerator({ onNext }) {
         </ul>
       </div>
 
+      <div className="ss-custom-library-row">
+        <span className="ss-hint">
+          Add your own hooks and script flows below, then keep a backup:
+        </span>
+        <div className="ss-custom-library-actions">
+          <button type="button" className="ss-btn-text" onClick={handleExportLibrary}>
+            Download my custom hooks
+          </button>
+          <label className="ss-btn-text ss-import-label">
+            Import custom hooks
+            <input type="file" accept=".json" onChange={handleImportLibrary} hidden />
+          </label>
+        </div>
+        {importError && <p className="ss-hint ss-import-error">{importError}</p>}
+      </div>
+
       <div className="ss-two-col">
         <div className="ss-col-left">
           {fields.map((f) => (
@@ -221,10 +353,7 @@ export default function StepThreeGenerator({ onNext }) {
               key={f.key}
               type="button"
               className={`ss-field-row ${activeField === f.key ? 'active' : ''}`}
-              onClick={() => {
-                setActiveField(f.key);
-                setSearch('');
-              }}
+              onClick={() => changeActiveField(f.key)}
             >
               <span className="ss-field-row-label">{f.label}</span>
               <span className="ss-field-row-value">{currentValueFor(f.key)}</span>
@@ -245,39 +374,147 @@ export default function StepThreeGenerator({ onNext }) {
               groupedHookOptions.map((group) => (
                 <div key={group.principleIdx} className="ss-option-group">
                   {group.items.map((opt) => (
-                    <button
-                      key={`${opt.principleIdx}-${opt.exampleIdx}`}
-                      type="button"
-                      className={`ss-option ss-option-hook ${selection.hook === opt.i ? 'selected' : ''}`}
-                      onClick={() => handlePick(opt.i)}
-                    >
-                      <span className="ss-option-hook-title">
-                        {group.principle.name}
-                        {group.principle.subtitle ? ` (${group.principle.subtitle})` : ''}
-                      </span>
-                      <span className="ss-option-hook-desc">{group.principle.psychology}</span>
-                      <span className="ss-option-hook-example">E.g. &quot;{opt.example}&quot;</span>
-                    </button>
+                    <div key={`${opt.principleIdx}-${opt.exampleIdx}`} className="ss-option-wrap">
+                      <button
+                        type="button"
+                        className={`ss-option ss-option-hook ${selection.hook === opt.i ? 'selected' : ''}`}
+                        onClick={() => handlePick(opt.i)}
+                      >
+                        <span className="ss-option-hook-title">
+                          {group.principle.name}
+                          {group.principle.subtitle ? ` (${group.principle.subtitle})` : ''}
+                          {group.principle.isCustom && <span className="ss-option-custom-badge">Custom</span>}
+                        </span>
+                        <span className="ss-option-hook-desc">{group.principle.psychology}</span>
+                        <span className="ss-option-hook-example">E.g. &quot;{opt.example}&quot;</span>
+                      </button>
+                      {group.principle.isCustom && (
+                        <button
+                          type="button"
+                          className="ss-option-delete"
+                          aria-label={`Delete custom hook ${group.principle.name}`}
+                          onClick={() => handleDeleteCustomHook(group.principle.name)}
+                        >
+                          &times;
+                        </button>
+                      )}
+                    </div>
                   ))}
                 </div>
               ))}
 
             {!isPsychologyHook &&
               filteredOptions.map((opt) => (
-                <button
-                  key={opt.name}
-                  type="button"
-                  className={`ss-option ${selection[activeField] === opt.i ? 'selected' : ''}`}
-                  onClick={() => handlePick(opt.i)}
-                >
-                  <span className="ss-option-name">{opt.name}</span>
-                  {opt.desc && <span className="ss-option-desc">{opt.desc}</span>}
-                  {opt.example && <span className="ss-option-example">&quot;{opt.example}&quot;</span>}
-                </button>
+                <div key={opt.name} className="ss-option-wrap">
+                  <button
+                    type="button"
+                    className={`ss-option ${selection[activeField] === opt.i ? 'selected' : ''}`}
+                    onClick={() => handlePick(opt.i)}
+                  >
+                    <span className="ss-option-name">
+                      {opt.name}
+                      {opt.isCustom && <span className="ss-option-custom-badge">Custom</span>}
+                    </span>
+                    {opt.desc && <span className="ss-option-desc">{opt.desc}</span>}
+                    {opt.example && <span className="ss-option-example">&quot;{opt.example}&quot;</span>}
+                  </button>
+                  {opt.isCustom && (
+                    <button
+                      type="button"
+                      className="ss-option-delete"
+                      aria-label={`Delete custom ${activeField} ${opt.name}`}
+                      onClick={() =>
+                        activeField === 'hook'
+                          ? handleDeleteCustomAngle(opt.name)
+                          : handleDeleteCustomFramework(stage, opt.name)
+                      }
+                    >
+                      &times;
+                    </button>
+                  )}
+                </div>
               ))}
 
             {filteredOptions.length === 0 && <p className="ss-hint">No matches.</p>}
           </div>
+
+          {(activeField === 'hook' || activeField === 'framework') && (
+            <div className="ss-add-custom">
+              {!showAddForm ? (
+                <button
+                  type="button"
+                  className="ss-add-custom-toggle"
+                  onClick={() => setShowAddForm(true)}
+                >
+                  + Add your own {activeField === 'hook' ? 'hook' : 'script flow'}
+                </button>
+              ) : (
+                <div className="ss-add-custom-form">
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={addForm.name}
+                    onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
+                  />
+                  {activeField === 'hook' && stage !== 'TOFU' && (
+                    <input
+                      type="text"
+                      placeholder="Subtitle (optional)"
+                      value={addForm.subtitle}
+                      onChange={(e) => setAddForm({ ...addForm, subtitle: e.target.value })}
+                    />
+                  )}
+                  {(activeField === 'framework' || (activeField === 'hook' && stage === 'TOFU')) && (
+                    <input
+                      type="text"
+                      placeholder="What it does"
+                      value={addForm.desc}
+                      onChange={(e) => setAddForm({ ...addForm, desc: e.target.value })}
+                    />
+                  )}
+                  {activeField === 'hook' && stage !== 'TOFU' && (
+                    <>
+                      <input
+                        type="text"
+                        placeholder="Why it works (the psychology)"
+                        value={addForm.psychology}
+                        onChange={(e) => setAddForm({ ...addForm, psychology: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="How to use it"
+                        value={addForm.application}
+                        onChange={(e) => setAddForm({ ...addForm, application: e.target.value })}
+                      />
+                    </>
+                  )}
+                  {activeField === 'hook' && (
+                    <input
+                      type="text"
+                      placeholder="Example line"
+                      value={addForm.example}
+                      onChange={(e) => setAddForm({ ...addForm, example: e.target.value })}
+                    />
+                  )}
+                  <div className="ss-add-custom-actions">
+                    <button type="button" className="ss-btn ss-btn-small" onClick={handleAddCustom}>
+                      Add
+                    </button>
+                    <button
+                      type="button"
+                      className="ss-btn-text"
+                      onClick={() => {
+                        setShowAddForm(false);
+                        setAddForm(EMPTY_ADD_FORM);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

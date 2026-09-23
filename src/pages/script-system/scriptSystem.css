@@ -623,6 +623,152 @@
   line-height: 1.4;
 }
 
+.ss-option-wrap {
+  position: relative;
+}
+
+.ss-option-wrap .ss-option {
+  width: 100%;
+}
+
+.ss-option-wrap:has(.ss-option-delete) .ss-option {
+  padding-right: 36px;
+}
+
+.ss-option-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--ss-glass-border);
+  border-radius: 50%;
+  color: #999;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ss-option-delete:hover {
+  border-color: var(--ss-red);
+  color: var(--ss-red);
+  background: rgba(214, 25, 61, 0.1);
+}
+
+.ss-option-custom-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 7px;
+  background: rgba(214, 25, 61, 0.15);
+  border: 1px solid rgba(214, 25, 61, 0.4);
+  border-radius: 999px;
+  color: var(--ss-red);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+}
+
+.ss-add-custom {
+  margin-top: 12px;
+  border-top: 1px solid var(--ss-glass-border);
+  padding-top: 12px;
+}
+
+.ss-add-custom-toggle {
+  width: 100%;
+  background: transparent;
+  border: 1px dashed var(--ss-glass-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #999;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ss-add-custom-toggle:hover {
+  border-color: var(--ss-red);
+  color: var(--ss-red);
+}
+
+.ss-add-custom-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ss-add-custom-form input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--ss-glass-border);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+}
+
+.ss-add-custom-form input:focus {
+  border-color: var(--ss-red);
+}
+
+.ss-add-custom-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 2px;
+}
+
+.ss-btn-small {
+  padding: 9px 20px;
+  font-size: 0.85rem;
+  box-shadow: none;
+}
+
+.ss-btn-text {
+  background: none;
+  border: none;
+  color: var(--ss-red);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ss-btn-text:hover {
+  text-decoration: underline;
+}
+
+.ss-custom-library-row {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--ss-glass-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ss-custom-library-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.ss-import-label {
+  cursor: pointer;
+}
+
+.ss-import-error {
+  color: #ff8a9b;
+}
+
 .ss-option-group {
   display: flex;
   flex-direction: column;
