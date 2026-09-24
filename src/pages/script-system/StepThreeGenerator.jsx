@@ -20,7 +20,7 @@ import {
   readTextFile,
 } from '../../utils/scriptSystemUtils';
 
-const EMPTY_ADD_FORM = { name: '', subtitle: '', desc: '', psychology: '', application: '', example: '' };
+const EMPTY_ADD_FORM = { name: '', desc: '', psychology: '', example: '' };
 
 function getFieldsForStage(stage) {
   if (stage === 'TOFU') {
@@ -215,10 +215,9 @@ export default function StepThreeGenerator({ onNext }) {
         ...prev,
         {
           name,
-          subtitle: addForm.subtitle.trim(),
           businessType: 'universal',
           psychology: addForm.psychology.trim(),
-          application: addForm.application.trim(),
+          application: '',
           examples: [addForm.example.trim()],
           isCustom: true,
         },
@@ -456,14 +455,6 @@ export default function StepThreeGenerator({ onNext }) {
                     value={addForm.name}
                     onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
                   />
-                  {activeField === 'hook' && stage !== 'TOFU' && (
-                    <input
-                      type="text"
-                      placeholder="Subtitle (optional)"
-                      value={addForm.subtitle}
-                      onChange={(e) => setAddForm({ ...addForm, subtitle: e.target.value })}
-                    />
-                  )}
                   {(activeField === 'framework' || (activeField === 'hook' && stage === 'TOFU')) && (
                     <input
                       type="text"
@@ -473,20 +464,12 @@ export default function StepThreeGenerator({ onNext }) {
                     />
                   )}
                   {activeField === 'hook' && stage !== 'TOFU' && (
-                    <>
-                      <input
-                        type="text"
-                        placeholder="Why it works (the psychology)"
-                        value={addForm.psychology}
-                        onChange={(e) => setAddForm({ ...addForm, psychology: e.target.value })}
-                      />
-                      <input
-                        type="text"
-                        placeholder="How to use it"
-                        value={addForm.application}
-                        onChange={(e) => setAddForm({ ...addForm, application: e.target.value })}
-                      />
-                    </>
+                    <input
+                      type="text"
+                      placeholder="Why it works (the psychology)"
+                      value={addForm.psychology}
+                      onChange={(e) => setAddForm({ ...addForm, psychology: e.target.value })}
+                    />
                   )}
                   {activeField === 'hook' && (
                     <input

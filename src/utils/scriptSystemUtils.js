@@ -37,7 +37,7 @@ Tone of voice: ${form.tone || '[your tone, e.g. warm and direct]'}`;
 // the final prompt describes the *strategy* instead of injecting that unrelated text.
 export function buildHookStrategyLine({ stage, hookName, hookDesc, hookPsychology, hookApplication }) {
   if (stage === 'TOFU') return `Angle: ${hookName}. ${hookDesc}`;
-  return `Hook strategy (${hookName}): ${hookPsychology} ${hookApplication}`;
+  return `Hook strategy (${hookName}): ${[hookPsychology, hookApplication].filter(Boolean).join(' ')}`;
 }
 
 export function buildScriptPrompt({ identity, topic, stage, hookStrategyLine, format, framework, ctaText }) {
