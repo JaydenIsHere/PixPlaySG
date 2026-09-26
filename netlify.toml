@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# React Router client-side routes (e.g. /access, /privacy-policy) have no matching
+# static file on Netlify's CDN, so direct visits or refreshes 404 without this.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
