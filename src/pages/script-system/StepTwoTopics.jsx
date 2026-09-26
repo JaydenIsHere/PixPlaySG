@@ -41,7 +41,7 @@ export default function StepTwoTopics({ onNext }) {
   const [topic, setTopic] = useLocalState('ss_topic', '');
   const [copied, setCopied] = useState(false);
 
-  const prompt = buildTopicGenerationPrompt({ identity, terminology, audience, businessTypeKey: businessType });
+  const prompt = buildTopicGenerationPrompt({ identity });
   const terminologyQuestions = buildQuestionSet('terminology');
   const audienceQuestions = buildQuestionSet('audience');
 
@@ -102,9 +102,9 @@ export default function StepTwoTopics({ onNext }) {
       {hasTopic === false && (
         <>
           <p className="ss-step-intro">
-            Fill in both grids below, then export them and run the prompt in your own AI tool
-            (ChatGPT, Gemini, or Claude, whichever you use) to get your 64 topics. Once you&apos;ve
-            picked one, come back and paste it into the box below.
+            Fill in both grids below. When you&apos;re done, download them as an image and copy the
+            prompt, then give your AI tool (ChatGPT, Gemini, or Claude) both together to get your
+            64 topics. Once you&apos;ve picked one, come back and paste it into the box below.
           </p>
 
           <div className="ss-field">
@@ -153,16 +153,17 @@ export default function StepTwoTopics({ onNext }) {
           <QuestionSetBlock label="Target audience question set" content={audienceQuestions} />
 
           <p className="ss-step-intro ss-brainstorm-spaced">
-            Once both grids are filled in, use the buttons below to copy the prompt or download
-            it as an image for generating your 64 topics. Your grids are saved automatically, so
-            come back anytime your business changes and update them.
+            Once both grids are filled in, download them as an image below, then copy the prompt
+            and give your AI tool both together, the image so it can read Grid 1 and Grid 2, and
+            the prompt to generate your 64 topics. Your grids are saved automatically, so come
+            back anytime your business changes and update them.
           </p>
           <div className="ss-export-row">
-            <button className="ss-btn" onClick={handleCopy} type="button">
-              {copied ? 'Copied!' : 'Copy prompt as text'}
-            </button>
-            <button className="ss-btn ss-btn-outline" onClick={handleDownloadPNG} type="button">
+            <button className="ss-btn" onClick={handleDownloadPNG} type="button">
               Download grids as PNG
+            </button>
+            <button className="ss-btn ss-btn-outline" onClick={handleCopy} type="button">
+              {copied ? 'Copied!' : 'Copy prompt as text'}
             </button>
           </div>
 

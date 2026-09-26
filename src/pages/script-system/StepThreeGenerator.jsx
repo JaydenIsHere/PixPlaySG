@@ -51,7 +51,7 @@ function getFieldOptions(key, stage, businessType, customs) {
     return getHookOptions(businessType, customs.hooks);
   }
   if (key === 'framework') return [...FRAMEWORKS[stage], ...(customs.frameworks[stage] || [])];
-  if (key === 'cta') return CTAS[stage].map((c) => ({ name: c }));
+  if (key === 'cta') return [...CTAS[stage].map((c) => ({ name: c })), ...(customs.ctas[stage] || [])];
   return [];
 }
 
@@ -72,10 +72,16 @@ export default function StepThreeGenerator({ onNext }) {
     MOFU: [],
     BOFU: [],
   });
+  const [customCtas, setCustomCtas] = useLocalState('ss_custom_ctas', { TOFU: [], MOFU: [], BOFU: [] });
   const [showAddForm, setShowAddForm] = useState(false);
   const [addForm, setAddForm] = useState(EMPTY_ADD_FORM);
   const [importError, setImportError] = useState('');
-  const customs = { angles: customAngles, hooks: customHooks, frameworks: customFrameworks };
+  const customs = {
+    angles: customAngles,
+    hooks: customHooks,
+    frameworks: customFrameworks,
+    ctas: customCtas,
+  };
 
   const isPsychologyHook = activeField === 'hook' && stage !== 'TOFU';
 
@@ -99,7 +105,7 @@ export default function StepThreeGenerator({ onNext }) {
   const activeOptions = useMemo(
     () => getFieldOptions(activeField, stage, businessType, customs),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- customs is rebuilt from these same fields every render
-    [activeField, stage, businessType, customAngles, customHooks, customFrameworks]
+    [activeField, stage, businessType, customAngles, customHooks, customFrameworks, customCtas]
   );
   const filteredOptions = useMemo(() => {
     if (!search.trim()) return activeOptions.map((opt, i) => ({ ...opt, i }));
@@ -232,6 +238,16 @@ export default function StepThreeGenerator({ onNext }) {
         ...prev,
         [stage]: [...(prev[stage] || []), { name, desc: addForm.desc.trim(), isCustom: true }],
       }));
+    } else if (activeField === 'cta') {
+      const list = customCtas[stage] || [];
+      if (list.some((c) => c.name.toLowerCase() === name.toLowerCase())) {
+        window.alert('You already have a custom CTA with that name.');
+        return;
+      }
+      setCustomCtas((prev) => ({
+        ...prev,
+        [stage]: [...(prev[stage] || []), { name, isCustom: true }],
+      }));
     }
 
     setAddForm(EMPTY_ADD_FORM);
@@ -256,9 +272,28 @@ export default function StepThreeGenerator({ onNext }) {
     setSelection((prev) => ({ ...prev, framework: 0 }));
   };
 
+  const handleDeleteCustomCta = (stageKey, name) => {
+    setCustomCtas((prev) => ({
+      ...prev,
+      [stageKey]: (prev[stageKey] || []).filter((c) => c.name !== name),
+    }));
+    setSelection((prev) => ({ ...prev, cta: 0 }));
+  };
+
+  const handleDeleteCustomOption = (name) => {
+    if (activeField === 'hook') return handleDeleteCustomAngle(name);
+    if (activeField === 'framework') return handleDeleteCustomFramework(stage, name);
+    if (activeField === 'cta') return handleDeleteCustomCta(stage, name);
+  };
+
   const handleExportLibrary = () => {
-    const json = buildCustomLibraryExport({ angles: customAngles, hooks: customHooks, frameworks: customFrameworks });
-    downloadTextFile(json, 'my-custom-hooks.json', 'application/json;charset=utf-8;');
+    const json = buildCustomLibraryExport({
+      angles: customAngles,
+      hooks: customHooks,
+      frameworks: customFrameworks,
+      ctas: customCtas,
+    });
+    downloadTextFile(json, 'my-custom-library.json', 'application/json;charset=utf-8;');
   };
 
   const handleImportLibrary = async (e) => {
@@ -269,14 +304,15 @@ export default function StepThreeGenerator({ onNext }) {
     try {
       const imported = JSON.parse(await readTextFile(file));
       const merged = mergeCustomLibrary(
-        { angles: customAngles, hooks: customHooks, frameworks: customFrameworks },
+        { angles: customAngles, hooks: customHooks, frameworks: customFrameworks, ctas: customCtas },
         imported
       );
       setCustomAngles(merged.angles);
       setCustomHooks(merged.hooks);
       setCustomFrameworks(merged.frameworks);
+      setCustomCtas(merged.ctas);
     } catch {
-      setImportError("Couldn't read that file. Make sure it's a custom-hooks export from this tool.");
+      setImportError("Couldn't read that file. Make sure it's a custom-library export from this tool.");
     }
   };
 
@@ -331,14 +367,14 @@ export default function StepThreeGenerator({ onNext }) {
 
       <div className="ss-custom-library-row">
         <span className="ss-hint">
-          Add your own hooks and script flows below, then keep a backup:
+          Add your own hooks, script flows, and CTAs below, then keep a backup:
         </span>
         <div className="ss-custom-library-actions">
           <button type="button" className="ss-btn-text" onClick={handleExportLibrary}>
-            Download my custom hooks
+            Download my custom library
           </button>
           <label className="ss-btn-text ss-import-label">
-            Import custom hooks
+            Import custom library
             <input type="file" accept=".json" onChange={handleImportLibrary} hidden />
           </label>
         </div>
@@ -421,12 +457,8 @@ export default function StepThreeGenerator({ onNext }) {
                     <button
                       type="button"
                       className="ss-option-delete"
-                      aria-label={`Delete custom ${activeField} ${opt.name}`}
-                      onClick={() =>
-                        activeField === 'hook'
-                          ? handleDeleteCustomAngle(opt.name)
-                          : handleDeleteCustomFramework(stage, opt.name)
-                      }
+                      aria-label={`Delete custom ${activeField === 'cta' ? 'CTA' : activeField} ${opt.name}`}
+                      onClick={() => handleDeleteCustomOption(opt.name)}
                     >
                       &times;
                     </button>
@@ -437,7 +469,7 @@ export default function StepThreeGenerator({ onNext }) {
             {filteredOptions.length === 0 && <p className="ss-hint">No matches.</p>}
           </div>
 
-          {(activeField === 'hook' || activeField === 'framework') && (
+          {(activeField === 'hook' || activeField === 'framework' || activeField === 'cta') && (
             <div className="ss-add-custom">
               {!showAddForm ? (
                 <button
@@ -445,13 +477,14 @@ export default function StepThreeGenerator({ onNext }) {
                   className="ss-add-custom-toggle"
                   onClick={() => setShowAddForm(true)}
                 >
-                  + Add your own {activeField === 'hook' ? 'hook' : 'script flow'}
+                  + Add your own{' '}
+                  {activeField === 'hook' ? 'hook' : activeField === 'framework' ? 'script flow' : 'CTA'}
                 </button>
               ) : (
                 <div className="ss-add-custom-form">
                   <input
                     type="text"
-                    placeholder="Name"
+                    placeholder={activeField === 'cta' ? 'CTA text' : 'Name'}
                     value={addForm.name}
                     onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
                   />

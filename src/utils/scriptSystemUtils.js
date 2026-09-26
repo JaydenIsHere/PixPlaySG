@@ -204,10 +204,15 @@ export function readTextFile(file) {
   });
 }
 
-export const DEFAULT_CUSTOM_LIBRARY = { angles: [], hooks: [], frameworks: { MOFU: [], BOFU: [] } };
+export const DEFAULT_CUSTOM_LIBRARY = {
+  angles: [],
+  hooks: [],
+  frameworks: { MOFU: [], BOFU: [] },
+  ctas: { TOFU: [], MOFU: [], BOFU: [] },
+};
 
-export function buildCustomLibraryExport({ angles, hooks, frameworks }) {
-  return JSON.stringify({ version: 1, angles, hooks, frameworks }, null, 2);
+export function buildCustomLibraryExport({ angles, hooks, frameworks, ctas }) {
+  return JSON.stringify({ version: 1, angles, hooks, frameworks, ctas }, null, 2);
 }
 
 // Merges an imported library into the buyer's current one, skipping anything that
@@ -228,6 +233,11 @@ export function mergeCustomLibrary(current, imported) {
     frameworks: {
       MOFU: mergeList(current.frameworks.MOFU, imported.frameworks?.MOFU),
       BOFU: mergeList(current.frameworks.BOFU, imported.frameworks?.BOFU),
+    },
+    ctas: {
+      TOFU: mergeList(current.ctas.TOFU, imported.ctas?.TOFU),
+      MOFU: mergeList(current.ctas.MOFU, imported.ctas?.MOFU),
+      BOFU: mergeList(current.ctas.BOFU, imported.ctas?.BOFU),
     },
   };
 }
@@ -270,33 +280,28 @@ Customization & Positioning
 - What objection does this group raise that your other customers usually don't?`;
 }
 
-export function buildTopicGenerationPrompt({ identity, terminology, audience, businessTypeKey }) {
-  const ratio = BUSINESS_TYPES[businessTypeKey].ratio;
-  const listOrPlaceholder = (arr, label) =>
-    (arr.some((v) => v.trim()) ? arr : Array(8).fill(`[${label}]`))
-      .map((v, i) => `${i + 1}. ${v || `[${label} ${i + 1}]`}`)
-      .join('\n');
+// Paired with the downloaded grid PNG, not standalone — the AI reads Grid 1/Grid 2
+// off the attached image, so this text never needs to spell the 8x8 values out itself.
+export function buildTopicGenerationPrompt({ identity }) {
+  return `I need you to act as an expert content strategist. Create a matrix of 64 highly targeted social media content topics tailored specifically to my brand.
 
-  return `${buildIdentityBlock(identity)}
+---
 
-I use a 9-square grid method to plan content. Here are my two grids:
+### **Brand Positioning & Context**
+${buildIdentityBlock(identity)}
 
-Grid 1 (industry terminology relevant to my business):
-${listOrPlaceholder(terminology, 'terminology')}
+---
 
-Grid 2 (my 8 main target customer/client types):
-${listOrPlaceholder(audience, 'audience type')}
-
-For each of the 8 target customer types, generate 8 short-form video topic ideas (64 total) that connect to the terminology above and speak directly to that audience's situation.
-
-Then classify every topic as TOFU, MOFU, or BOFU using these definitions:
-- TOFU: Attract attention and reach new people who may not know my business.
-- MOFU: Build interest, trust, and understanding.
-- BOFU: Help the right people make a buying decision.
-
-Aim for roughly this content ratio overall: TOFU ${ratio.TOFU}% / MOFU ${ratio.MOFU}% / BOFU ${ratio.BOFU}%.
-
-Output as a table: Target customer type | Topic | Stage (TOFU/MOFU/BOFU).`;
+### **Output Requirements**
+1. **Systematic Intersections:** Pair every single item from **Grid 1** with every item from **Grid 2** to produce exactly **64 unique combinations** (8 x 8 matrix).
+2. **Actionable Content Titles:** Do not just output raw keyphrases. Translate each intersection into a high-converting social media post topic or video title tailored to my brand positioning.
+3. **Tailored Angle:** Ensure each topic addresses a specific pain point, goal, or perspective unique to that target audience segment while incorporating the chosen terminology naturally.
+4. **Structured Format:** Deliver the 64 topics in a clean table or numbered list with the following details for each:
+   - **Topic #** (1 to 64)
+   - **Terminology Used** (Grid 1 item)
+   - **Target Audience** (Grid 2 item)
+   - **Post/Video Content Title**
+   - **Core Angle / Key Takeaway** (1 short sentence)`;
 }
 
 const GRID_COLORS = {
