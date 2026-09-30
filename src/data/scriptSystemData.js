@@ -362,7 +362,7 @@ export const FRAMEWORKS = {
 
 // Paste your demo/intro video's YouTube link here once it's ready (any normal
 // youtube.com/watch or youtu.be link works — it's converted automatically).
-export const TUTORIAL_VIDEO_URL = '';
+export const TUTORIAL_VIDEO_URL = 'https://youtu.be/Yji0LLL_NCQ';
 
 // MOFU/BOFU CTAs are built around what actually converts on short-form content:
 // comment-to-DM automation (ManyChat-style) sees 40-65% click-through vs 3-5% for a
