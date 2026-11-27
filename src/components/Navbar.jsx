@@ -23,7 +23,7 @@ const Navbar = () => {
 
   return (
     <header className='header'>
-      <a href='/'>
+      <a href='/services'>
         <div className='logoImage'>
           <img src={pixplaylogo} alt='PixPlay Logo' />
         </div>
@@ -36,8 +36,11 @@ const Navbar = () => {
       ></div>
 
       <nav className={click ? 'navbar active' : 'navbar'}>
+        <a href='/' onClick={handleClose}>
+          Learning
+        </a>
         <a
-          href='/#home' // Use #home if you have a home section
+          href='/services#home' // Use #home if you have a home section
           onClick={() => {
             handleClose();
             scrollToSection('home'); // Ensure this works with your routing setup
@@ -46,7 +49,7 @@ const Navbar = () => {
           Home
         </a>
         <a
-          href='/#service' // Use #service to match the id of the section
+          href='/services#service' // Use #service to match the id of the section
           onClick={() => {
             handleClose();
             scrollToSection('service'); // Scroll to the service section
@@ -55,7 +58,7 @@ const Navbar = () => {
           Services
         </a>
         <a
-          href='/#steps' // Use #contact if you have a contact section
+          href='/services#steps' // Use #contact if you have a contact section
           onClick={() => {
             handleClose();
             scrollToSection('steps'); // Ensure this works with your routing setup
@@ -65,7 +68,7 @@ const Navbar = () => {
         </a>
 
         <a
-          href='/#contact' // Use #contact if you have a contact section
+          href='/services#contact' // Use #contact if you have a contact section
           onClick={() => {
             handleClose();
             scrollToSection('contact'); // Ensure this works with your routing setup
