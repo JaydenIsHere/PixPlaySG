@@ -469,3 +469,55 @@ body[data-lang="zh"] .hero h1 { font-size: 34px; line-height: 1.25; }
 .walk-steps li::before { content: counter(ws); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 8px; background: var(--cyan-soft); color: var(--teal); font-weight: 900; font-size: 13px; display: grid; place-items: center; }
 .walk-res { background: var(--cyan-soft); border-radius: 12px; padding: 10px 12px; font-size: 15px; margin-bottom: 10px; }
 .walk-tip { font-size: 14.5px; color: var(--ink-2); margin: 0 !important; }
+
+/* logos */
+.logo-img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+.tt-i { background: #fff; border: 1px solid var(--line); padding: 4px; overflow: hidden; }
+.tcard-top .logo-img { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line); padding: 3px; background: #fff; }
+.tg-head { display: flex; align-items: center; gap: 14px; margin-top: 4px; }
+.tg-head .logo-img { width: 64px; height: 64px; flex: none; border-radius: 18px; border: 1px solid var(--line); padding: 6px; background: #fff; box-shadow: var(--shadow); }
+
+/* finder promo */
+.fd-promo { display: grid; grid-template-columns: 52px 1fr; gap: 12px 14px; align-items: center; padding: 18px; border-radius: 22px; margin: 0 0 30px;
+  background: linear-gradient(135deg, #17181c, #2c2f3a); color: #fff; box-shadow: 0 16px 36px rgba(20,20,30,.22); }
+.fd-promo-i { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 26px; background: rgba(66,233,227,.18); }
+.fd-promo small { display: block; color: var(--cyan); font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+.fd-promo b { display: block; font-size: 19px; font-weight: 900; margin: 2px 0 4px; line-height: 1.3; }
+.fd-promo span span { color: #cfd2da; font-size: 14px; }
+.fd-promo .btn { grid-column: 1 / -1; }
+
+/* finder */
+.finder { max-width: 760px; margin: 0 auto 34px; }
+.fd-step h2, .fd-result h2 { font-size: 21px; font-weight: 900; margin: 14px 0 12px; }
+.fd-bar { height: 6px; border-radius: 99px; background: var(--bg-2); overflow: hidden; }
+.fd-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--teal)); border-radius: 99px; }
+.fd-opts { display: grid; gap: 8px; }
+.fd-opt { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 14px; border: 1.5px solid var(--line); background: #fff; cursor: pointer; font-weight: 700; }
+.fd-opt input { width: 20px; height: 20px; accent-color: var(--red); flex: none; }
+.fd-opt:has(input:checked) { border-color: var(--red); background: var(--red-soft); }
+.fd-nav { display: flex; gap: 10px; margin-top: 16px; }
+.fd-nav .btn { flex: 1; }
+.fd-err { color: var(--red); font-weight: 800; margin: 10px 0 0; }
+.fd-list { display: grid; gap: 10px; margin-bottom: 16px; }
+.fd-card { display: grid; grid-template-columns: 48px 1fr; gap: 8px 12px; padding: 14px; border-radius: 18px; border: 1px solid var(--line); background: #fff; box-shadow: var(--shadow); color: var(--ink); }
+.fd-card.best { border: 2px solid var(--red); }
+.fd-card img { width: 48px; height: 48px; border-radius: 12px; border: 1px solid var(--line); padding: 4px; background: #fff; }
+.fd-card-b b { display: block; font-weight: 900; font-size: 17px; }
+.fd-card-b small { display: block; font-size: 13.5px; color: var(--ink-2); line-height: 1.5; margin-top: 2px; }
+.fd-why { color: var(--teal) !important; font-weight: 800; }
+.fd-go { grid-column: 1 / -1; font-weight: 900; color: var(--red); font-size: 14.5px; }
+
+/* newsletter */
+.nl { padding: 24px 18px; border-radius: 24px; margin: 0 0 30px; background: linear-gradient(160deg, var(--cyan-soft), #fff 70%); border: 1px solid #c9f3f1; }
+.nl h2 { font-size: 22px; font-weight: 900; margin: 12px 0 6px; }
+.nl p { margin: 0 0 14px; color: var(--ink-2); }
+.nl-form { display: flex; flex-direction: column; gap: 10px; }
+.nl-form input { min-height: 50px; border-radius: 999px; border: 1.5px solid var(--line); padding: 0 18px; font: inherit; background: #fff; }
+.nl-form input:focus { outline: 2px solid var(--cyan); border-color: transparent; }
+.nl-ok { font-weight: 800; color: var(--teal); }
+@media (min-width: 760px) {
+  .fd-promo { grid-template-columns: 56px 1fr auto; }
+  .fd-promo .btn { grid-column: auto; }
+  .nl-form { flex-direction: row; }
+  .nl-form input { flex: 1; }
+}

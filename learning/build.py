@@ -21,9 +21,12 @@ media.apply(GUIDES)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PUBLIC = os.path.join(os.path.dirname(HERE), "public")
-VERSION = "7"
+VERSION = "8"
 TRACK_FILE = os.path.join(HERE, "stats_url.txt")
 TRACK_URL = open(TRACK_FILE).read().strip() if os.path.exists(TRACK_FILE) else ""
+# Newsletter form (Kit): put the form's action URL from Kit's embed code in newsletter_action.txt. Hidden until then.
+NL_FILE = os.path.join(HERE, "newsletter_action.txt")
+NL_ACTION = open(NL_FILE).read().strip() if os.path.exists(NL_FILE) else ""
 TOOL_BY_KEY = {t["key"]: t for t in TOOLS}
 PATH_BY_KEY = {p["key"]: p for p in PATHS}
 GT = {t["key"]: t for t in GUIDE_TOOLS}
@@ -162,7 +165,7 @@ def guide_index(lang):
 
 
 # ------------------------------------------------------------------------------------------------ page shell
-TABS = (("home", ""), ("missions", "missions/"), ("library", "library/"), ("tools", "tools/"), ("about", "about/"), ("saved", "saved/"))
+TABS = (("home", ""), ("tools", "tools/"), ("finder", "finder/"), ("library", "library/"), ("missions", "missions/"), ("about", "about/"), ("saved", "saved/"))
 
 
 def page(lang, rel, title, desc, body, tab, extra_head="", og=None):
@@ -289,6 +292,8 @@ def home(lang):
   <p class="muted tg-home-p">{esc(u["tg"]["home_p"])}</p>
   <div class="tgrid">{"".join(tool_tile(lang, t) for t in GUIDE_TOOLS)}</div>
 </section>
+{finder_promo(lang)}
+{newsletter(lang)}
 {"".join(cats)}
 <section class="svc">
   <div class="svc-txt">
@@ -430,9 +435,14 @@ def plan_badge(lang, t):
     return f'<span class="badge">{g[kind]}</span>'
 
 
+def logo(t, size=40):
+    return (f'<img class="logo-img" src="/lp/logo-{t["key"]}.png" width="{size}" height="{size}" '
+            f'alt="{esc(t["name"])} logo" loading="lazy" decoding="async">')
+
+
 def tool_tile(lang, t):
     grp = TOOL_GROUPS[t["group"]]
-    return (f'<a class="tt" href="{url(lang, "tools/" + t["key"] + "/")}"><span class="tt-i">{grp[2]}</span>'
+    return (f'<a class="tt" href="{url(lang, "tools/" + t["key"] + "/")}"><span class="tt-i">{logo(t)}</span>'
             f'<b>{esc(t["name"])}</b><small>{esc(grp[0] if lang == "en" else grp[1])}</small></a>')
 
 
@@ -441,6 +451,78 @@ def tool_btn(lang, t, cls="btn"):
     rel = "sponsored noopener" if t["ref"] else "noopener"
     return (f'<a class="{cls}" href="{href}" target="_blank" rel="{rel}" data-out="{t["key"]}">'
             f'{UI[lang]["tg"]["try"]} {esc(t["name"])} ↗</a>')
+
+
+def newsletter(lang):
+    if not NL_ACTION:
+        return ""
+    n = UI[lang]["nl"]
+    return f'''<section class="nl" id="newsletter">
+  <span class="kicker">✉️ {n["k"]}</span>
+  <h2>{esc(n["h"])}</h2>
+  <p>{esc(n["p"])}</p>
+  <form class="nl-form" action="{esc(NL_ACTION)}" method="post" target="_blank" data-nl>
+    <input type="email" name="email_address" required placeholder="{esc(n["ph"])}" aria-label="{esc(n["ph"])}">
+    <button class="btn" type="submit">{n["btn"]}</button>
+  </form>
+  <p class="nl-ok" hidden>{esc(n["ok"])}</p>
+</section>'''
+
+
+def finder_promo(lang):
+    f = UI[lang]["fd"]
+    return (f'<a class="fd-promo" href="{url(lang, "finder/")}"><span class="fd-promo-i">🧭</span>'
+            f'<span><small>{f["k"]}</small><b>{esc(f["h"])}</b><span>{esc(f["p"])}</span></span>'
+            f'<span class="btn">{f["cta"]} →</span></a>')
+
+
+# goal -> tools, in priority order (first = best fit)
+FINDER_MAP = {"automate": ["make", "n8n"], "schedule": ["metricool", "buffer"], "dm": ["manychat"],
+              "clips": ["opusclip"], "talk": ["captions"], "avatar": ["heygen"], "voice": ["elevenlabs"],
+              "design": ["adobeexpress"], "email": ["kit", "systemeio"], "sell": ["payhip", "systemeio"], "web": ["hostinger"]}
+
+
+def finder_page(lang):
+    u, f = UI[lang], UI[lang]["fd"]
+    goals = "".join(f'<label class="fd-opt"><input type="checkbox" name="goal" value="{k}"><span>{esc(v)}</span></label>' for k, v in f["goals"])
+    tools = {t["key"]: {"name": t["name"], "tag": t[lang]["tagline"], "who": [PERSONAS[w][0 if lang == "en" else 1] for w in t["who"]],
+                        "plan": t[lang]["plan"], "url": url(lang, "tools/" + t["key"] + "/"), "logo": f"/lp/logo-{t['key']}.png",
+                        "paid": t["key"] in ("hostinger", "captions"), "tech": t["key"] == "n8n", "use": t["use"]}
+             for t in GUIDE_TOOLS}
+    goal_names = {k: v for k, v in f["goals"]}
+    body = f'''
+<section class="page-h"><span class="kicker">🧭 {f["k"]}</span><h1 style="margin-top:12px">{esc(f["h"])}</h1><p class="lede">{esc(f["p"])}</p></section>
+<div class="finder" data-finder>
+  <div class="fd-step" data-step="1">
+    <div class="fd-bar"><i style="width:33%"></i></div>
+    <h2>{esc(f["q1"])}</h2><div class="fd-opts">{goals}</div>
+    <p class="fd-err" hidden>{esc(f["none"])}</p>
+    <div class="fd-nav"><button class="btn" type="button" data-next>{f["next"]} →</button></div>
+  </div>
+  <div class="fd-step" data-step="2" hidden>
+    <div class="fd-bar"><i style="width:66%"></i></div>
+    <h2>{esc(f["q2"])}</h2>
+    <div class="fd-opts one"><label class="fd-opt"><input type="radio" name="tech" value="beg" checked><span>🌱 {f["beg"]}</span></label>
+    <label class="fd-opt"><input type="radio" name="tech" value="tech"><span>🛠️ {f["tech"]}</span></label></div>
+    <div class="fd-nav"><button class="btn btn-line" type="button" data-back>← {f["back"]}</button><button class="btn" type="button" data-next>{f["next"]} →</button></div>
+  </div>
+  <div class="fd-step" data-step="3" hidden>
+    <div class="fd-bar"><i style="width:100%"></i></div>
+    <h2>{esc(f["q3"])}</h2>
+    <div class="fd-opts one"><label class="fd-opt"><input type="radio" name="budget" value="free" checked><span>🆓 {f["free"]}</span></label>
+    <label class="fd-opt"><input type="radio" name="budget" value="pay"><span>💳 {f["pay"]}</span></label></div>
+    <div class="fd-nav"><button class="btn btn-line" type="button" data-back>← {f["back"]}</button><button class="btn" type="button" data-results>{f["res"]} ✨</button></div>
+  </div>
+  <div class="fd-result" hidden>
+    <h2>{f["res"]}</h2>
+    <div class="fd-list"></div>
+    <button class="btn btn-line" type="button" data-again>↺ {f["again"]}</button>
+  </div>
+</div>
+{newsletter(lang)}
+<script type="application/json" id="fd-data">{json.dumps({"map": FINDER_MAP, "tools": tools, "goals": goal_names,
+    "t": {"why": f["why"], "read": f["read"], "we_use": u["we_use"]}}, ensure_ascii=False)}</script>'''
+    return page(lang, "finder/", f["h"], f["p"], body, "finder")
 
 
 def tools_page(lang):
@@ -452,7 +534,7 @@ def tools_page(lang):
         if not items:
             continue
         cards = "".join(
-            f'<a class="tcard" href="{url(lang, "tools/" + t["key"] + "/")}"><span class="tcard-top"><b>{esc(t["name"])}</b>'
+            f'<a class="tcard" href="{url(lang, "tools/" + t["key"] + "/")}"><span class="tcard-top">{logo(t, 36)}<b>{esc(t["name"])}</b>'
             f'{plan_badge(lang, t)}{f"""<span class="badge use">{u["we_use"]}</span>""" if t["use"] else ""}</span>'
             f'<small>{esc(t[lang]["tagline"])}</small><span class="tcard-who">'
             + "".join(f'<i>{esc(PERSONAS[w][0 if lang == "en" else 1])}</i>' for w in t["who"][:3])
@@ -462,7 +544,7 @@ def tools_page(lang):
     body = f'''
 <section class="page-h"><h1>{u["tools_h"]}</h1><p class="lede">{esc(u["tools_lede"])}</p>
 <p class="disc">{esc(u["disclosure_short"])} <a href="{url(lang, "disclosure/")}">{u["disclosure_link"]}</a></p></section>
-<div class="tools-wrap">{"".join(groups)}
+<div class="tools-wrap">{finder_promo(lang)}{"".join(groups)}
 <h2 class="sec">{g["also_h"]}</h2><div class="tools">{also}</div></div>'''
     return page(lang, "tools/", u["tools_h"], u["tools_lede"], body, "tools")
 
@@ -506,7 +588,7 @@ def tool_guide_page(lang, t):
 <a class="crumb" href="{url(lang, "tools/")}">← 🧰 {u["tools_h"]}</a>
 <article class="guide tool-guide" data-guide="tool-{t["key"]}">
   <span class="tag" style="--c:#0B8A86">{grp[2]} {esc(grp[0] if lang == "en" else grp[1])}</span>
-  <h1>{esc(t["name"])}</h1>
+  <div class="tg-head">{logo(t, 64)}<h1>{esc(t["name"])}</h1></div>
   <p class="intro">{esc(T["tagline"])}</p>
   <div class="tg-badges">{plan_badge(lang, t)}{f"""<span class="badge use">{u["we_use"]}</span>""" if t["use"] else ""}</div>
   <div class="actions">
@@ -526,6 +608,7 @@ def tool_guide_page(lang, t):
   <div class="end">
     <button class="btn btn-line share-end" type="button" data-share>{ICONS["share"]} {u["share"]}</button>
   </div>
+  {newsletter(lang)}
   <h2 class="ready">{g["more"]}</h2>
   <div class="tgrid">{more}</div>
 </article>'''
@@ -609,6 +692,7 @@ def main():
         out += [(f"missions/{p['key']}/", mission_page(lang, p)) for p in PATHS]
         out += [(f"guides/{s}/", guide_page(lang, g)) for s, g in GUIDES.items()]
         out += [(f"tools/{t['key']}/", tool_guide_page(lang, t)) for t in GUIDE_TOOLS]
+        out += [("finder/", finder_page(lang))]
         for rel, text in out:
             write(f"{lang}/{rel}index.html", text)
             pages.append(url(lang, rel))

@@ -176,6 +176,53 @@
     restart();
   });
 
+  // ---- tool finder
+  var fd = $("[data-finder]"), fdData = $("#fd-data");
+  if (fd && fdData) {
+    var D = JSON.parse(fdData.textContent), steps = $$(".fd-step", fd), cur = 0;
+    function show(n) { cur = n; steps.forEach(function (s, i) { s.hidden = i !== n; }); $(".fd-result", fd).hidden = true; window.scrollTo({ top: fd.offsetTop - 80, behavior: "smooth" }); }
+    $$("[data-next]", fd).forEach(function (b) { b.addEventListener("click", function () {
+      if (cur === 0 && !$$('input[name="goal"]:checked', fd).length) { $(".fd-err", fd).hidden = false; return; }
+      $(".fd-err", fd).hidden = true; show(cur + 1);
+    }); });
+    $$("[data-back]", fd).forEach(function (b) { b.addEventListener("click", function () { show(cur - 1); }); });
+    $("[data-again]", fd).addEventListener("click", function () { $$("input[type=checkbox]", fd).forEach(function (c) { c.checked = false; }); show(0); });
+    $("[data-results]", fd).addEventListener("click", function () {
+      var goals = $$('input[name="goal"]:checked', fd).map(function (c) { return c.value; });
+      var tech = ($('input[name="tech"]:checked', fd) || {}).value, budget = ($('input[name="budget"]:checked', fd) || {}).value;
+      var score = {}, why = {};
+      goals.forEach(function (g) { (D.map[g] || []).forEach(function (k, i) {
+        var t = D.tools[k], s = 10 - i * 3;
+        if (t.tech && tech === "beg") s -= 4;
+        if (t.tech && tech === "tech") s += 2;
+        if (t.paid && budget === "free") s -= 3;
+        score[k] = (score[k] || 0) + s; (why[k] = why[k] || []).push(D.goals[g]);
+      }); });
+      var keys = Object.keys(score).sort(function (a, b) { return score[b] - score[a]; }).slice(0, 5);
+      var list = $(".fd-list", fd); list.innerHTML = "";
+      keys.forEach(function (k, i) {
+        var t = D.tools[k], el = document.createElement("a");
+        el.className = "fd-card" + (i === 0 ? " best" : ""); el.href = t.url;
+        el.innerHTML = '<img src="' + t.logo + '" width="48" height="48" alt="">' +
+          '<span class="fd-card-b"><b></b><small class="fd-tag"></small><small class="fd-why"></small><small class="fd-plan"></small></span><span class="fd-go">' + D.t.read + ' →</span>';
+        $("b", el).textContent = t.name + (t.use ? " · " + D.t.we_use : "");
+        $(".fd-tag", el).textContent = t.tag;
+        $(".fd-why", el).textContent = "✓ " + D.t.why + "：" + why[k].join(" / ");
+        $(".fd-plan", el).textContent = "💳 " + t.plan;
+        list.appendChild(el);
+      });
+      steps.forEach(function (s) { s.hidden = true; }); $(".fd-result", fd).hidden = false;
+      track("finder", goals.join("+") + "|" + tech + "|" + budget);
+      window.scrollTo({ top: fd.offsetTop - 80, behavior: "smooth" });
+    });
+  }
+
+  // ---- newsletter form: show a thank-you after submit (Kit opens its confirmation in a new tab)
+  $$("[data-nl]").forEach(function (f) { f.addEventListener("submit", function () {
+    track("subscribe", location.pathname);
+    setTimeout(function () { f.hidden = true; var ok = f.parentNode.querySelector(".nl-ok"); if (ok) ok.hidden = false; }, 300);
+  }); });
+
   // close the mobile menu after picking a link
   $$(".menu-p a").forEach(function (a) { a.addEventListener("click", function () { var m = a.closest("details"); if (m) m.open = false; }); });
 
