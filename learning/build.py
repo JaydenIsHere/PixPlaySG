@@ -14,10 +14,13 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from content import LANGS, SITE, UI, PATHS, TOOLS, TOOL_CATS, TESTING, DISCLOSURE, TYPES, ABOUT, FREE_PDF  # noqa: E402
 from guides import GUIDES  # noqa: E402
+import media  # noqa: E402
+
+media.apply(GUIDES)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PUBLIC = os.path.join(os.path.dirname(HERE), "public")
-VERSION = "2"
+VERSION = "3"
 TRACK_FILE = os.path.join(HERE, "stats_url.txt")
 TRACK_URL = open(TRACK_FILE).read().strip() if os.path.exists(TRACK_FILE) else ""
 TOOL_BY_KEY = {t["key"]: t for t in TOOLS}
@@ -140,6 +143,10 @@ def render_blocks(lang, slug, blocks):
             out.append(tool_card(lang, b[1]))
         elif kind == "next":
             out.append(next_card(lang, b[1]))
+        elif kind == "img":
+            out.append(media.photo(lang, b[1]))
+        elif kind == "fig":
+            out.append(media.fig(lang, b[1]))
         elif kind == "mission":
             out.append(f'<h2 class="ready">{UI[lang]["ready_h"]}</h2>' + mission_card(lang, b[1]))
         else:
@@ -156,7 +163,7 @@ def guide_index(lang):
 TABS = (("home", ""), ("missions", "missions/"), ("library", "library/"), ("tools", "tools/"), ("saved", "saved/"))
 
 
-def page(lang, rel, title, desc, body, tab, extra_head=""):
+def page(lang, rel, title, desc, body, tab, extra_head="", og=None):
     u = UI[lang]
     other = "zh" if lang == "en" else "en"
     full_title = title if title.startswith("PixPlay") else f"{title} · PixPlay Learning"
@@ -179,7 +186,7 @@ def page(lang, rel, title, desc, body, tab, extra_head=""):
 <meta property="og:title" content="{esc(full_title)}">
 <meta property="og:description" content="{esc(desc)}">
 <meta property="og:url" content="{SITE}{url(lang, rel)}">
-<meta property="og:image" content="{SITE}/lp/og.png">
+<meta property="og:image" content="{og or SITE + "/lp/og.png"}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -228,7 +235,8 @@ def type_tag(lang, kind):
 
 def article_card(lang, g):
     u = UI[lang]
-    return (f'<a class="acard" href="{url(lang, "guides/" + g["slug"] + "/")}" data-row="{g["slug"]}" data-type="{g["kind"]}">'
+    img = media.thumb(g["cover"]) if g.get("cover") else ""
+    return (f'<a class="acard" href="{url(lang, "guides/" + g["slug"] + "/")}" data-row="{g["slug"]}" data-type="{g["kind"]}">{img}'
             f'<span class="acard-top">{type_tag(lang, g["kind"])}<span class="row-done">✓</span></span>'
             f'<b>{esc(g[lang]["title"])}</b><small>{esc(g[lang]["desc"])}</small>'
             f'<span class="acard-m">{g["minutes"]} {u["min"]}</span></a>')
@@ -395,6 +403,7 @@ def guide_page(lang, g):
     <button class="act" type="button" data-save="{g["slug"]}">{ICONS["saved"]}<span>{u["save"]}</span></button>
     <button class="act" type="button" data-share>{ICONS["share"]}<span>{u["share"]}</span></button>
   </div>
+  {media.photo(lang, g["cover"], cover=True) if g.get("cover") else ""}
   <p class="intro">{esc(G["desc"])}</p>
   {disc}
   {render_blocks(lang, g["slug"], G["blocks"])}
@@ -404,7 +413,9 @@ def guide_page(lang, g):
     <button class="btn btn-line share-end" type="button" data-share>{ICONS["share"]} {u["share"]}</button>
   </div>
 </article>'''
-    return page(lang, f"guides/{g['slug']}/", G["title"], G["desc"], body, tab)
+    og = (f"https://images.unsplash.com/photo-{media.PHOTOS[g['cover']]['id']}?w=1200&h=630&fit=crop&auto=format&q=75"
+          if g.get("cover") else None)
+    return page(lang, f"guides/{g['slug']}/", G["title"], G["desc"], body, tab, og=og)
 
 
 def tools_page(lang):
