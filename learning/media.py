@@ -26,6 +26,8 @@ PHOTOS = {
                 "en": "Writing posts with a phone and laptop", "zh": "用手機和筆電寫貼文"},
     "swing": {"id": "1650047708006-227ca59f5992", "by": "Kemal Esensoy", "user": "kemalesensoy",
               "en": "Working on a laptop from a hanging chair on a tropical beach", "zh": "在熱帶海灘的吊椅上用筆電工作"},
+    "office_it": {"id": "1766066014773-0074bf4911de", "by": "BaljkanN4", "user": "baljkann4",
+                  "en": "A tech professional holding a laptop in a modern office", "zh": "在現代辦公室拿著筆電的科技工作者"},
     "team": {"id": "1519389950473-47ba0277781c", "by": "Marvin Meyer", "user": "marvelous",
              "en": "A team planning content around a table", "zh": "團隊圍著桌子規劃內容"},
     "shoot": {"id": "1695408247109-3bf125ad0538", "by": "Wesley Tingey", "user": "wesleyphotography",
@@ -65,7 +67,7 @@ def photo(lang, key, cover=False):
             f'<figcaption>{credit}</figcaption></figure>')
 
 
-def hero(lang, key="swing"):
+def hero(lang, key="office_it"):
     p = PHOTOS[key]
     return (f'<img src="{photo_src(key, 900)}" srcset="{photo_src(key, 600)} 600w, {photo_src(key, 900)} 900w, '
             f'{photo_src(key, 1400)} 1400w" sizes="(min-width: 800px) 380px, 100vw" width="900" height="506" '

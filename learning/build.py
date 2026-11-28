@@ -15,16 +15,18 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from content import LANGS, SITE, UI, PATHS, TOOLS, TOOL_CATS, TESTING, DISCLOSURE, TYPES, ABOUT, FREE_PDF  # noqa: E402
 from guides import GUIDES  # noqa: E402
 import media  # noqa: E402
+from tools_data import GUIDE_TOOLS, TOOL_GROUPS, PERSONAS, DEEP  # noqa: E402
 
 media.apply(GUIDES)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PUBLIC = os.path.join(os.path.dirname(HERE), "public")
-VERSION = "5"
+VERSION = "7"
 TRACK_FILE = os.path.join(HERE, "stats_url.txt")
 TRACK_URL = open(TRACK_FILE).read().strip() if os.path.exists(TRACK_FILE) else ""
 TOOL_BY_KEY = {t["key"]: t for t in TOOLS}
 PATH_BY_KEY = {p["key"]: p for p in PATHS}
+GT = {t["key"]: t for t in GUIDE_TOOLS}
 esc = html.escape
 CUR = ' aria-current="page"'
 BLANK = ' target="_blank" rel="noopener"'
@@ -272,7 +274,7 @@ def home(lang):
     <h1>{esc(u["hero_h1a"])} <em>{esc(u["hero_h1b"])}</em></h1>
     <p class="lede">{esc(u["hero_lede"])}</p>
     <div class="cta">
-      <a class="btn" href="{url(lang, "missions/")}">🎯 {u["cta_mission"]}</a>
+      <a class="btn" href="{url(lang, "tools/")}">🧰 {u["cta_mission"]}</a>
       <a class="btn btn-line" href="{url(lang, "library/")}">📚 {u["cta_library"]}</a>
     </div>
   </div>
@@ -281,6 +283,11 @@ def home(lang):
 <section class="cont" data-continue hidden>
   <h2 class="sec">{u["continue_h"]}</h2>
   <a class="cont-card" href="#"><span class="cont-t"></span>{ICONS["arrow"]}</a>
+</section>
+<section class="tg-home">
+  <div class="sec-row"><h2 class="sec">{u["tg"]["home_h"]}</h2><a href="{url(lang, "tools/")}">{u["tg"]["all"]} →</a></div>
+  <p class="muted tg-home-p">{esc(u["tg"]["home_p"])}</p>
+  <div class="tgrid">{"".join(tool_tile(lang, t) for t in GUIDE_TOOLS)}</div>
 </section>
 {"".join(cats)}
 <section class="svc">
@@ -413,20 +420,116 @@ def guide_page(lang, g):
     return page(lang, f"guides/{g['slug']}/", G["title"], G["desc"], body, tab, og=og)
 
 
+def plan_badge(lang, t):
+    txt = t[lang]["plan"].lower()
+    g = UI[lang]["tg"]
+    if lang == "en":
+        kind = "free" if txt.startswith("free plan") or txt.startswith("free if") or "limited free" in txt else ("trial" if "trial" in txt else "paid")
+    else:
+        kind = "free" if ("免費方案" in txt and "沒有免費方案" not in txt) or "免費；" in txt or "架設免費" in txt else ("trial" if "試用" in txt else "paid")
+    return f'<span class="badge">{g[kind]}</span>'
+
+
+def tool_tile(lang, t):
+    grp = TOOL_GROUPS[t["group"]]
+    return (f'<a class="tt" href="{url(lang, "tools/" + t["key"] + "/")}"><span class="tt-i">{grp[2]}</span>'
+            f'<b>{esc(t["name"])}</b><small>{esc(grp[0] if lang == "en" else grp[1])}</small></a>')
+
+
+def tool_btn(lang, t, cls="btn"):
+    href = t["ref"] or t["url"]
+    rel = "sponsored noopener" if t["ref"] else "noopener"
+    return (f'<a class="{cls}" href="{href}" target="_blank" rel="{rel}" data-out="{t["key"]}">'
+            f'{UI[lang]["tg"]["try"]} {esc(t["name"])} ↗</a>')
+
+
 def tools_page(lang):
     u = UI[lang]
+    g = u["tg"]
     groups = []
-    for cat, names in TOOL_CATS.items():
-        cards = "".join(tool_card(lang, t["key"]) for t in TOOLS if t["cat"] == cat)
-        if cards:
-            groups.append(f'<h2 class="sec">{esc(names[0] if lang == "en" else names[1])}</h2><div class="tools">{cards}</div>')
-    chips = "".join(f'<span class="chip">{esc(n)}</span>' for n in TESTING)
+    for gk, (en_name, zh_name, icon) in TOOL_GROUPS.items():
+        items = [t for t in GUIDE_TOOLS if t["group"] == gk]
+        if not items:
+            continue
+        cards = "".join(
+            f'<a class="tcard" href="{url(lang, "tools/" + t["key"] + "/")}"><span class="tcard-top"><b>{esc(t["name"])}</b>'
+            f'{plan_badge(lang, t)}{f"""<span class="badge use">{u["we_use"]}</span>""" if t["use"] else ""}</span>'
+            f'<small>{esc(t[lang]["tagline"])}</small><span class="tcard-who">'
+            + "".join(f'<i>{esc(PERSONAS[w][0 if lang == "en" else 1])}</i>' for w in t["who"][:3])
+            + '</span></a>' for t in items)
+        groups.append(f'<h2 class="sec">{icon} {esc(en_name if lang == "en" else zh_name)}</h2><div class="tcards">{cards}</div>')
+    also = "".join(tool_card(lang, t["key"]) for t in TOOLS if t["key"] in ("claude", "chatgpt", "claudecode", "canva"))
     body = f'''
 <section class="page-h"><h1>{u["tools_h"]}</h1><p class="lede">{esc(u["tools_lede"])}</p>
 <p class="disc">{esc(u["disclosure_short"])} <a href="{url(lang, "disclosure/")}">{u["disclosure_link"]}</a></p></section>
-{"".join(groups)}
-<section class="testing"><h2 class="sec">{u["testing_h"]}</h2><p class="muted">{esc(u["testing_lede"])}</p><div class="chips">{chips}</div></section>'''
+<div class="tools-wrap">{"".join(groups)}
+<h2 class="sec">{g["also_h"]}</h2><div class="tools">{also}</div></div>'''
     return page(lang, "tools/", u["tools_h"], u["tools_lede"], body, "tools")
+
+
+DEEP_L = {"en": ("Example", "The situation", "Steps", "Result", "Tip"), "zh": ("範例", "情境", "步驟", "結果", "小技巧")}
+
+
+def deep_html(lang, t):
+    items = DEEP.get(t["key"], {}).get(lang)
+    if not items:
+        return ""
+    k, why, st, res, tip = DEEP_L[lang]
+    out = []
+    for n, w in enumerate(items, 1):
+        flow = '<span class="wf-arrow">→</span>'.join(
+            f'<span class="wf-node{" me" if x == t["name"] else ""}">{esc(x)}</span>' for x in w["flow"])
+        steps = "".join(f"<li>{esc(x)}</li>" for x in w["steps"])
+        out.append(f'''<div class="walk">
+  <span class="walk-k">{k} {n}</span>
+  <h3>{esc(w["t"])}</h3>
+  <p class="walk-why"><b>{why}：</b>{esc(w["why"])}</p>
+  <div class="wf" aria-label="flow">{flow}</div>
+  <p class="walk-st">{st}</p><ol class="walk-steps">{steps}</ol>
+  <div class="walk-res">✅ <b>{res}：</b>{esc(w["result"])}</div>
+  <p class="walk-tip">💡 <b>{tip}：</b>{esc(w["tip"])}</p>
+</div>''')
+    return "".join(out)
+
+
+def tool_guide_page(lang, t):
+    u, g, T = UI[lang], UI[lang]["tg"], t[lang]
+    grp = TOOL_GROUPS[t["group"]]
+    who = "".join(f'<span class="who-chip">{esc(PERSONAS[w][0 if lang == "en" else 1])}</span>' for w in t["who"])
+    li = lambda xs: "<ul>" + "".join(f"<li>{esc(x)}</li>" for x in xs) + "</ul>"
+    steps = "<ol class=\"steps3\">" + "".join(f"<li>{esc(x)}</li>" for x in T["start"]) + "</ol>"
+    note = g["used"] if t["use"] else g["info"]
+    same = [x for x in GUIDE_TOOLS if x["group"] == t["group"] and x["key"] != t["key"]]
+    others = (same + [x for x in GUIDE_TOOLS if x["key"] != t["key"] and x not in same])[:4]
+    more = "".join(tool_tile(lang, x) for x in others)
+    body = f'''
+<a class="crumb" href="{url(lang, "tools/")}">← 🧰 {u["tools_h"]}</a>
+<article class="guide tool-guide" data-guide="tool-{t["key"]}">
+  <span class="tag" style="--c:#0B8A86">{grp[2]} {esc(grp[0] if lang == "en" else grp[1])}</span>
+  <h1>{esc(t["name"])}</h1>
+  <p class="intro">{esc(T["tagline"])}</p>
+  <div class="tg-badges">{plan_badge(lang, t)}{f"""<span class="badge use">{u["we_use"]}</span>""" if t["use"] else ""}</div>
+  <div class="actions">
+    <button class="act" type="button" data-save="tool-{t["key"]}">{ICONS["saved"]}<span>{u["save"]}</span></button>
+    <button class="act" type="button" data-share>{ICONS["share"]}<span>{u["share"]}</span></button>
+  </div>
+  <div class="tg-cta-top">{tool_btn(lang, t)}</div>
+  <p class="disc">{esc(note)} {esc(u["disclosure_short"])} <a href="{url(lang, "disclosure/")}">{u["disclosure_link"]}</a></p>
+  <h2>{g["overview"]}</h2><p>{esc(T["overview"])}</p>
+  <h2>{g["uses"]}</h2>{deep_html(lang, t) or li(T["uses"])}
+  <h2>{g["who"]}</h2><div class="who-chips">{who}</div>
+  <h2>{g["content"]}</h2>{li(T["content"])}
+  <h2>{g["know"]}</h2><div class="note warn">⚠️ <div>{li(T["know"])}</div></div>
+  <h2>{g["plan"]}</h2><p>{esc(T["plan"])} <span class="muted">{esc(g["check"])}</span></p>
+  <h2>{g["start"]}</h2>{steps}
+  <div class="tg-cta">{tool_btn(lang, t)}</div>
+  <div class="end">
+    <button class="btn btn-line share-end" type="button" data-share>{ICONS["share"]} {u["share"]}</button>
+  </div>
+  <h2 class="ready">{g["more"]}</h2>
+  <div class="tgrid">{more}</div>
+</article>'''
+    return page(lang, f"tools/{t['key']}/", f"{t['name']}: {T['tagline']}", T["overview"][:155], body, "tools")
 
 
 def saved_page(lang):
@@ -436,7 +539,7 @@ def saved_page(lang):
 <section class="mine"><h2 class="sec">{u["progress_h"]}</h2>{progress(list(GUIDES))}</section>
 <div class="acards" data-saved-list></div>
 <div class="empty" data-saved-empty hidden><p>{esc(u["saved_empty"])}</p><a class="btn" href="{url(lang, "library/")}">{u["browse"]}</a></div>
-<template id="row-tpl">{"".join(article_card(lang, g) for g in GUIDES.values())}</template>'''
+<template id="row-tpl">{"".join(article_card(lang, g) for g in GUIDES.values())}{"".join(tool_tile(lang, t).replace("<a class=", "<a data-row=" + chr(34) + "tool-" + t["key"] + chr(34) + " class=", 1) for t in GUIDE_TOOLS)}</template>'''
     return page(lang, "saved/", u["saved_h"], u["saved_h"], body, "saved")
 
 
@@ -463,7 +566,7 @@ def about_page(lang):
     body = f'''<section class="page-h"><span class="kicker">PixPlay Learning</span><h1 style="margin-top:12px">{u["about"]}</h1>
 <p class="lede">{esc(u["about_short"])}</p></section>
 <article class="guide plain">{prose(ABOUT[lang])}</article>
-<div class="cta" style="margin-top:22px"><a class="btn" href="{url(lang, "missions/")}">🎯 {u["cta_mission"]}</a>
+<div class="cta" style="margin-top:22px"><a class="btn" href="{url(lang, "tools/")}">🧰 {u["cta_mission"]}</a>
 <a class="btn btn-line" href="{url(lang, "library/")}">📚 {u["cta_library"]}</a></div>'''
     return page(lang, "about/", u["about"], u["about_short"], body, "")
 
@@ -505,6 +608,7 @@ def main():
                ("saved/", saved_page(lang)), ("disclosure/", disclosure_page(lang)), ("about/", about_page(lang))]
         out += [(f"missions/{p['key']}/", mission_page(lang, p)) for p in PATHS]
         out += [(f"guides/{s}/", guide_page(lang, g)) for s, g in GUIDES.items()]
+        out += [(f"tools/{t['key']}/", tool_guide_page(lang, t)) for t in GUIDE_TOOLS]
         for rel, text in out:
             write(f"{lang}/{rel}index.html", text)
             pages.append(url(lang, rel))
