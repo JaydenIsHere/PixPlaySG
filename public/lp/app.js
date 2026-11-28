@@ -64,12 +64,11 @@
       b.classList.toggle("on", on);
       $("span", b).textContent = on ? T.saved : T.save;
     });
-    var tab = $('.tab[href$="/saved/"]');
-    if (tab) {
+    $$("[data-saved-link]").forEach(function (tab) {
       var dot = $(".dot", tab);
       if (saved.length) { if (!dot) { dot = document.createElement("span"); dot.className = "dot"; tab.appendChild(dot); } dot.textContent = saved.length; }
       else if (dot) dot.remove();
-    }
+    });
   }
   $$("[data-save]").forEach(function (b) {
     b.addEventListener("click", function () {
@@ -159,6 +158,26 @@
   // ---- outbound tool clicks + language choice
   $$("[data-out]").forEach(function (a) { a.addEventListener("click", function () { track("click", a.getAttribute("data-out")); }); });
   $$("[data-lang-switch]").forEach(function (a) { a.addEventListener("click", function () { set("lang", a.getAttribute("data-lang-switch")); }); });
+
+  // ---- slideshow: swipe, dots, auto-advance (paused on touch/hover, off for reduced motion)
+  $$("[data-show]").forEach(function (show) {
+    var track = $(".slides", show), dots = $$(".sdot", show), n = dots.length, i = 0, timer = null;
+    function go(k) { i = (k + n) % n; track.scrollTo({ left: track.clientWidth * i, behavior: "smooth" }); }
+    function paint() {
+      i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+      dots.forEach(function (d, k) { d.classList.toggle("on", k === i); });
+    }
+    track.addEventListener("scroll", function () { window.requestAnimationFrame(paint); }, { passive: true });
+    dots.forEach(function (d) { d.addEventListener("click", function () { go(+d.getAttribute("data-slide")); restart(); }); });
+    var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function restart() { clearInterval(timer); if (!still) timer = setInterval(function () { go(i + 1); }, 4000); }
+    ["touchstart", "mouseenter"].forEach(function (e) { show.addEventListener(e, function () { clearInterval(timer); }, { passive: true }); });
+    show.addEventListener("mouseleave", restart);
+    restart();
+  });
+
+  // close the mobile menu after picking a link
+  $$(".menu-p a").forEach(function (a) { a.addEventListener("click", function () { var m = a.closest("details"); if (m) m.open = false; }); });
 
   paintProgress(); paintSaves();
 })();

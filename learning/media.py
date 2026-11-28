@@ -24,6 +24,22 @@ PHOTOS = {
               "en": "A customer at a small salon's front desk", "zh": "小美髮店櫃台的客人"},
     "creator": {"id": "1520333789090-1afc82db536a", "by": "bruce mars", "user": "brucemars",
                 "en": "Writing posts with a phone and laptop", "zh": "用手機和筆電寫貼文"},
+    "swing": {"id": "1650047708006-227ca59f5992", "by": "Kemal Esensoy", "user": "kemalesensoy",
+              "en": "Working on a laptop from a hanging chair on a tropical beach", "zh": "在熱帶海灘的吊椅上用筆電工作"},
+    "team": {"id": "1519389950473-47ba0277781c", "by": "Marvin Meyer", "user": "marvelous",
+             "en": "A team planning content around a table", "zh": "團隊圍著桌子規劃內容"},
+    "shoot": {"id": "1695408247109-3bf125ad0538", "by": "Wesley Tingey", "user": "wesleyphotography",
+              "en": "Filming content in a kitchen", "zh": "在廚房拍攝內容"},
+    "studio": {"id": "1673767298248-b128f17f89af", "by": "Videodeck .co", "user": "videodeck",
+               "en": "Recording and editing in a content studio", "zh": "在內容工作室錄製和剪輯"},
+    "stats": {"id": "1781246435700-afec19012b45", "by": "Ngital", "user": "ngital",
+              "en": "Performance charts on a laptop", "zh": "筆電上的成效圖表"},
+    "lock": {"id": "1584433144859-1fc3ab64a957", "by": "Dan Nelson", "user": "danny144",
+             "en": "A smartphone showing a security lock", "zh": "顯示安全鎖的手機"},
+    "office": {"id": "1758876201729-e60eaf5f9194", "by": "Vitaly Gariev", "user": "silverkblack",
+               "en": "Checking a notice on a phone at work", "zh": "在辦公室查看手機通知"},
+    "desk": {"id": "1499750310107-5fef28a66643", "by": "Andrew Neel", "user": "andrewtneel",
+             "en": "A laptop, coffee and phone on a work desk", "zh": "工作桌上的筆電、咖啡和手機"},
     "planner": {"id": "1654154196885-3810c262e626", "by": "Covene", "user": "covene",
                 "en": "Planning the week in a notebook", "zh": "在筆記本上規劃一整週"},
 }
@@ -47,6 +63,35 @@ def photo(lang, key, cover=False):
             f'sizes="(min-width: 800px) 760px, 100vw" width="900" height="506" alt="{esc(p[lang])}" '
             f'{LOAD_COVER if cover else LOAD_LAZY} decoding="async">'
             f'<figcaption>{credit}</figcaption></figure>')
+
+
+def hero(lang, key="swing"):
+    p = PHOTOS[key]
+    return (f'<img src="{photo_src(key, 900)}" srcset="{photo_src(key, 600)} 600w, {photo_src(key, 900)} 900w, '
+            f'{photo_src(key, 1400)} 1400w" sizes="(min-width: 800px) 380px, 100vw" width="900" height="506" '
+            f'alt="{esc(p[lang])}" fetchpriority="high" decoding="async">'
+            f'<span class="hero-credit">{CREDIT[lang]}: {esc(p["by"])} / Unsplash</span>')
+
+
+SLIDES = [
+    ("team", {"en": "Strategy & content planning", "zh": "策略與內容規劃"}),
+    ("shoot", {"en": "Photo & short-video shoots", "zh": "拍攝：照片與短影音"}),
+    ("studio", {"en": "Production & editing, sped up with AI", "zh": "用 AI 加速製作與剪輯"}),
+    ("stats", {"en": "Posting & performance tracking", "zh": "發布與成效追蹤"}),
+]
+
+
+def slideshow(lang):
+    slides, dots = [], []
+    for i, (key, cap) in enumerate(SLIDES):
+        p = PHOTOS[key]
+        load = LOAD_LAZY if i else ""
+        slides.append(f'<figure class="slide"><img src="{photo_src(key, 900)}" srcset="{photo_src(key, 600)} 600w, '
+                      f'{photo_src(key, 900)} 900w, {photo_src(key, 1400)} 1400w" sizes="(min-width: 800px) 500px, 100vw" '
+                      f'width="900" height="506" alt="{esc(p[lang])}" {load} decoding="async">'
+                      f'<figcaption><b>{esc(cap[lang])}</b><span>{CREDIT[lang]}: {esc(p["by"])} / Unsplash</span></figcaption></figure>')
+        dots.append(f'<button type="button" class="sdot{" on" if i == 0 else ""}" aria-label="{i + 1}" data-slide="{i}"></button>')
+    return f'<div class="show" data-show><div class="slides">{"".join(slides)}</div><div class="sdots">{"".join(dots)}</div></div>'
 
 
 def thumb(key):
@@ -168,7 +213,8 @@ MEDIA = {
     "week-of-threads-posts-with-claude": {"cover": "creator", "insert": [(10, ("fig", "chat"))]},
     "schedule-threads-posts-metricool": {"cover": "planner", "insert": [(10, ("fig", "calendar"))]},
     "why-take-affiliate-marketing-seriously": {"cover": "beach", "insert": [(3, ("img", "suitcase"))]},
-    "make-vs-manychat-vs-metricool": {"cover": "nomad", "insert": [(2, ("fig", "tools3"))]},
+    "make-vs-manychat-vs-metricool": {"cover": "desk", "insert": [(2, ("fig", "tools3"))]},
+    "avoid-account-suspension": {"cover": "lock", "insert": [(9, ("img", "office"))]},
     "content-marketing-small-business": {"cover": "maker", "insert": [(3, ("fig", "adsvscontent")), (6, ("img", "salon"))]},
 }
 

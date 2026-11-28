@@ -20,7 +20,7 @@ media.apply(GUIDES)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PUBLIC = os.path.join(os.path.dirname(HERE), "public")
-VERSION = "3"
+VERSION = "5"
 TRACK_FILE = os.path.join(HERE, "stats_url.txt")
 TRACK_URL = open(TRACK_FILE).read().strip() if os.path.exists(TRACK_FILE) else ""
 TOOL_BY_KEY = {t["key"]: t for t in TOOLS}
@@ -160,16 +160,16 @@ def guide_index(lang):
 
 
 # ------------------------------------------------------------------------------------------------ page shell
-TABS = (("home", ""), ("missions", "missions/"), ("library", "library/"), ("tools", "tools/"), ("saved", "saved/"))
+TABS = (("home", ""), ("missions", "missions/"), ("library", "library/"), ("tools", "tools/"), ("about", "about/"), ("saved", "saved/"))
 
 
 def page(lang, rel, title, desc, body, tab, extra_head="", og=None):
     u = UI[lang]
     other = "zh" if lang == "en" else "en"
     full_title = title if title.startswith("PixPlay") else f"{title} · PixPlay Learning"
-    tabs = "".join(
-        f'<a href="{url(lang, r)}" class="tab{" on" if tab == k else ""}"{CUR if tab == k else ""}>'
-        f'{ICONS[k]}<span>{u["tab_" + k]}</span></a>' for k, r in TABS)
+    links = "".join(
+        f'<a href="{url(lang, r)}" class="nl{" on" if tab == k else ""}"{CUR if tab == k else ""}'
+        f'{" data-saved-link" if k == "saved" else ""}>{u["tab_" + k]}</a>' for k, r in TABS)
     alts = "".join(f'<link rel="alternate" hreflang="{UI[l]["html_lang"]}" href="{SITE}{url(l, rel)}">' for l in LANGS)
     tjson = json.dumps({k: u[k] for k in ("save", "saved", "copied", "done_of")}, ensure_ascii=False)
     return f'''<!doctype html>
@@ -201,7 +201,11 @@ def page(lang, rel, title, desc, body, tab, extra_head="", og=None):
 <body data-lang="{lang}">
 <header class="top">
   <a class="logo" href="{url(lang)}" aria-label="PixPlay Learning"><img src="/lp/logo.png" alt="PixPlay" width="120" height="25"><span>Learning</span></a>
-  <a class="lang" href="{url(other, rel)}" hreflang="{UI[other]["html_lang"]}" aria-label="{u["other_lang_label"]}" data-lang-switch="{other}">{u["other_lang"]}</a>
+  <nav class="nav" aria-label="PixPlay Learning">{links}</nav>
+  <div class="top-r">
+    <a class="lang" href="{url(other, rel)}" hreflang="{UI[other]["html_lang"]}" aria-label="{u["other_lang_label"]}" data-lang-switch="{other}">{u["other_lang"]}</a>
+    <details class="menu"><summary aria-label="{u["menu"]}"><i></i><i></i><i></i></summary><nav class="menu-p">{links}</nav></details>
+  </div>
 </header>
 <main class="wrap">
 {body}
@@ -210,7 +214,6 @@ def page(lang, rel, title, desc, body, tab, extra_head="", og=None):
   <p><a href="{url(lang, "about/")}">{u["about"]}</a> · <a href="{url(lang, "disclosure/")}">{u["disclosure_link"]}</a> · <a href="/services">{u["services"]}</a> · <a href="/privacy-policy">{u["privacy"]}</a></p>
 </footer>
 </main>
-<nav class="tabs" aria-label="PixPlay Learning">{tabs}</nav>
 <div class="toast" role="status" aria-live="polite"></div>
 <script>window.PL={{lang:"{lang}",track:"{TRACK_URL}",t:{tjson}}};</script>
 <script src="/lp/app.js?v={VERSION}" defer></script>
@@ -249,22 +252,23 @@ def by_date():
 # ------------------------------------------------------------------------------------------------ pages
 def home(lang):
     u = UI[lang]
-    start = PATH_BY_KEY["start"]
-    hero_steps = [t for _, _, t, _ in lesson_list(start)][:3] if lang == "en" else [t for _, _, _, t in lesson_list(start)][:3]
-    how = "".join(f'<div class="how-i"><span class="how-e">{e}</span><b>{esc(h)}</b><p>{esc(d)}</p></div>' for e, h, d in u["how"])
-    picker = "".join(
-        f'<a class="pick" href="{url(lang, "missions/" + key + "/")}"><span class="pick-i">{icon}</span>'
-        f'<span><b>{esc(h)}</b><small>{esc(d)}</small></span>{ICONS["arrow"]}</a>'
-        for key, icon, h, d in u["picker"])
-    latest = "".join(article_card(lang, g) for g in by_date()[:4])
+    cats = []
+    for n, (k, t) in enumerate(TYPES.items(), 1):
+        arts = [g for g in by_date() if g["kind"] == k]
+        if not arts:
+            continue
+        cards = "".join(article_card(lang, g) for g in arts)
+        cats.append(f'''<section class="cat" style="--c:{t["color"]}">
+  <div class="cat-h"><span class="cat-n">{n}</span><div><h2>{esc(t[lang])}</h2><p>{esc(t["d" + lang])}</p></div></div>
+  <div class="rail">{cards}</div>
+  <a class="cat-more" href="{url(lang, "library/")}?type={k}">{u["see_all"]} {esc(t[lang])} →</a>
+</section>''')
     work = "".join(
         f'<a class="work" href="{href}"{BLANK if href.startswith("http") else ""}>'
         f'<b>{esc(t)}</b><small>{esc(d)}</small></a>' for t, d, href in u["work_items"])
-    card_steps = "".join(f'<li class="{"ok" if i == 0 else ""}"><i></i>{esc(t)}</li>' for i, t in enumerate(hero_steps))
     body = f'''
 <section class="hero">
   <div class="hero-txt">
-    <span class="kicker">{u["hero_kicker"]}</span>
     <h1>{esc(u["hero_h1a"])} <em>{esc(u["hero_h1b"])}</em></h1>
     <p class="lede">{esc(u["hero_lede"])}</p>
     <div class="cta">
@@ -272,31 +276,22 @@ def home(lang):
       <a class="btn btn-line" href="{url(lang, "library/")}">📚 {u["cta_library"]}</a>
     </div>
   </div>
-  <div class="hero-art" aria-hidden="true">
-    <div class="blob b1"></div><div class="blob b2"></div>
-    <div class="hcard">
-      <div class="hcard-k">🎯 {u["hero_card_k"]}</div>
-      <div class="hcard-t"><span class="path-i" style="--c:{start["color"]}">{start["icon"]}</span><b>{esc(start[lang][0])}</b>
-        <span class="hring"><span>1</span></span></div>
-      <ul>{card_steps}</ul>
-    </div>
-  </div>
+  <div class="hero-pic">{media.hero(lang)}</div>
 </section>
 <section class="cont" data-continue hidden>
   <h2 class="sec">{u["continue_h"]}</h2>
   <a class="cont-card" href="#"><span class="cont-t"></span>{ICONS["arrow"]}</a>
 </section>
-<section>
-  <h2 class="sec">{u["how_h"]}</h2>
-  <div class="how">{how}</div>
-</section>
-<section>
-  <h2 class="sec">{u["picker_h"]}</h2>
-  <div class="picks">{picker}</div>
-</section>
-<section>
-  <div class="sec-row"><h2 class="sec">{u["latest_h"]}</h2><a href="{url(lang, "library/")}">{u["see_all"]} →</a></div>
-  <div class="acards">{latest}</div>
+{"".join(cats)}
+<section class="svc">
+  <div class="svc-txt">
+    <span class="kicker">{u["svc_k"]}</span>
+    <h2>{esc(u["svc_h"])}</h2>
+    <p>{esc(u["svc_p"])}</p>
+    <ul>{"".join(f"<li>{esc(x)}</li>" for x in u["svc_pts"])}</ul>
+    <a class="btn" href="/services" data-out="services">{u["svc_cta"]} →</a>
+  </div>
+  {media.slideshow(lang)}
 </section>
 <section class="about-s">
   <h2>{esc(u["about_h"])}</h2>

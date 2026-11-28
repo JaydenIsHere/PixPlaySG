@@ -15,6 +15,8 @@ GUIDES = {}
 
 def guide(slug, path, minutes, date, en, zh, kind="guide", mission=None):
     """path = the mission this guide is a step of (None for library articles); mission = mission to recommend at the end."""
+    if kind == "guide":  # mission lessons: the Start mission is "getting started", the rest are "level up"
+        kind = "start" if path == "start" else "levelup"
     GUIDES[slug] = {"slug": slug, "path": path, "minutes": minutes, "date": date, "en": en, "zh": zh,
                     "kind": kind, "mission": mission or path}
 
@@ -301,7 +303,7 @@ zh={
 
 
 # =============================================================================================== LIBRARY ARTICLES
-guide("why-take-affiliate-marketing-seriously", None, 6, "2026-11-28", kind="why", mission="start",
+guide("why-take-affiliate-marketing-seriously", None, 6, "2026-11-28", kind="start", mission="start",
 en={
     "title": "Why affiliate marketing is worth taking seriously (and what it's not)",
     "desc": "No product to build, almost no cost to start, and skills that help any business. Plus the honest parts: it's slow at first, and it's not passive at the start.",
@@ -471,7 +473,7 @@ zh={
 })
 
 # ---------------------------------------------------------------------------------------------------------------
-guide("content-marketing-small-business", None, 6, "2026-11-28", kind="content", mission="content",
+guide("content-marketing-small-business", None, 6, "2026-11-28", kind="start", mission="content",
 en={
     "title": "How content marketing grows a small business with zero ad budget",
     "desc": "Why helpful posts keep working long after ads stop, the 3 kinds of content that work for small businesses, and a 1-hour weekly routine with AI.",
@@ -548,5 +550,100 @@ zh={
         ("h2", "同一個技能，也能帶來聯盟收入"),
         ("p", "內容行銷和聯盟行銷其實是同一個技能：先幫忙，再推薦。為了你的生意學會它，也就能拿來推薦工具。"),
         ("mission", "content"),
+    ],
+})
+
+# ---------------------------------------------------------------------------------------------------------------
+guide("avoid-account-suspension", None, 7, "2026-11-28", kind="levelup", mission="autopilot",
+en={
+    "title": "Don't lose your account: how to stay within Threads and Instagram's rules",
+    "desc": "Why accounts get suspended when you automate or post links, the posting habits that keep you in good standing, how to secure your account, and what to do if it happens anyway.",
+    "blocks": [
+        ("p", "Automation and links are how you grow online. They're also the two things platforms watch most closely for spam. Accounts usually get restricted not because of one post, but because of a <b>pattern</b>. Here's how to keep yours healthy."),
+        ("warn", "No trick guarantees an account will never be restricted, and platforms change their systems often. What works long term is simple: post like a real person who's genuinely helping, and follow the rules."),
+        ("h2", "What usually leads to a suspension"),
+        ("ul", [
+            "<b>Too much, too fast.</b> A brand-new account posting many times a day from day one looks like a spam account, even if the content is good.",
+            "<b>A link in almost every post.</b> Posts that only exist to send people elsewhere get treated as spam, especially links to free shared web addresses that spammers also use.",
+            "<b>Nobody home.</b> Accounts that publish automatically but never reply or talk to anyone look like bots.",
+            "<b>The same content on several accounts.</b> Copy-pasting posts across accounts you own.",
+            "<b>Hidden ads.</b> Affiliate or paid posts with no disclosure.",
+            "<b>Weak security.</b> A hacked account that posts spam gets suspended too.",
+        ]),
+        ("h2", "Safer posting habits"),
+        ("table", ["Habit", "Safer approach"], [
+            ["Posts per day", "2–3 for an established account. Start new accounts at 1–2 a day for the first few weeks."],
+            ["Links", "In at most 1 of every 3 posts. Let the rest stand on their own, or point to the link in your bio."],
+            ["Replies per post", "Keep threads short: a post plus 1–3 replies is plenty."],
+            ["Where links go", "Your own website address, rather than free shared ones."],
+            ["Being present", "10 minutes a day replying to comments and joining other people's conversations yourself."],
+            ["Disclosure", "Mark affiliate links and paid partnerships clearly."],
+        ]),
+        ("tip", "Use scheduling tools that connect through the platform's official system, like Metricool. Avoid apps that ask for your password or auto-follow, auto-like or mass-message people. Those break most platforms' rules."),
+        ("h2", "Secure your account today"),
+        ("check", [
+            "Turn on two-factor authentication with an authenticator app, not only SMS.",
+            "Save your backup codes somewhere safe and offline.",
+            "Make sure the email and phone number on the account are up to date.",
+            "Check which devices are logged in, and remove any you don't recognise.",
+            "Never type your password on a page you reached from an email or DM link. Open the app yourself instead.",
+        ]),
+        ("h2", "If your account does get suspended"),
+        ("ol", [
+            "Don't panic, and don't keep trying to log in again and again.",
+            "Find the platform's email or in-app notice and use its official review or appeal option. Keep your message short and honest.",
+            "Be patient. Reviews can take days.",
+            "Don't create a new account to replace it while you wait. Most platforms treat that as getting around a suspension, and it can affect your other accounts.",
+            "Ignore anyone offering to \"recover your account for a fee\". These are almost always scams.",
+        ]),
+        ("h2", "Don't build on one platform only"),
+        ("p", "Even careful accounts can be caught by mistake. That's why it pays to own part of your audience: a simple website, an email list, and a second platform. If one door closes, the others stay open."),
+        ("mission", "autopilot"),
+    ],
+},
+zh={
+    "title": "別讓帳號被停權：怎麼在 Threads 和 Instagram 的規則內經營",
+    "desc": "為什麼自動化、貼連結的帳號容易被停權，哪些發文習慣比較安全、怎麼保護帳號，還有真的被停權時該怎麼做。",
+    "blocks": [
+        ("p", "自動化和連結，是在網路上成長的方法；同時也是平台最嚴格在看有沒有洗版的兩件事。帳號被限制，通常不是因為某一篇文，而是因為一種<b>模式</b>。下面教你怎麼讓帳號保持健康。"),
+        ("warn", "沒有任何技巧能保證帳號永遠不會被限制，平台的機制也常常在改。長期有效的做法很簡單：像一個真的在幫助別人的真人那樣發文，並且遵守規則。"),
+        ("h2", "通常是什麼導致停權"),
+        ("ul", [
+            "<b>太多、太快。</b>全新帳號第一天就一天發很多篇，就算內容很好，看起來也像洗版帳號。",
+            "<b>幾乎每篇都有連結。</b>只是為了把人導走的貼文，容易被當成垃圾內容，尤其是很多洗版的人也在用的免費共用網址。",
+            "<b>帳號沒有人在。</b>只會自動發文、從來不回覆也不跟人互動的帳號，看起來就像機器人。",
+            "<b>多個帳號發一樣的內容。</b>在你擁有的好幾個帳號之間複製貼上。",
+            "<b>沒揭露的廣告。</b>聯盟連結或業配文沒有標示。",
+            "<b>帳號安全太弱。</b>被盜用、開始發垃圾訊息的帳號，一樣會被停權。",
+        ]),
+        ("h2", "比較安全的發文習慣"),
+        ("table", ["習慣", "比較安全的做法"], [
+            ["每天發幾篇", "穩定的帳號 2–3 篇。新帳號前幾週先一天 1–2 篇。"],
+            ["連結", "每 3 篇最多 1 篇有連結。其他的單純分享內容，或請大家看個人簡介的連結。"],
+            ["每篇的回覆串", "串文保持短短的：一篇加上 1–3 則回覆就夠了。"],
+            ["連結放哪裡", "用你自己的網址，不要用免費共用的網址。"],
+            ["人要在", "每天花 10 分鐘自己回留言，也去別人的貼文底下互動。"],
+            ["揭露", "聯盟連結和業配合作要清楚標示。"],
+        ]),
+        ("tip", "用透過平台官方系統連接的排程工具，例如 Metricool。避開會要你密碼、或自動追蹤、自動按讚、大量私訊的 App，這些大部分平台都禁止。"),
+        ("h2", "今天就把帳號保護好"),
+        ("check", [
+            "開啟兩步驟驗證，用驗證器 App，不要只靠簡訊。",
+            "把備用代碼存在安全、離線的地方。",
+            "確認帳號上的 email 和手機號碼都是最新的。",
+            "檢查有哪些裝置登入中，移除不認識的。",
+            "從 email 或私訊連結點進去的頁面，絕對不要輸入密碼。自己打開 App 再處理。",
+        ]),
+        ("h2", "如果帳號真的被停權"),
+        ("ol", [
+            "先不要慌，也不要一直重複嘗試登入。",
+            "找到平台寄來的 email 或 App 裡的通知，用官方的審查或申訴選項。內容簡短、誠實就好。",
+            "耐心等，審查可能要好幾天。",
+            "等待期間不要開新帳號來取代它。大部分平台會把這視為規避停權，還可能影響你其他的帳號。",
+            "有人說「付錢幫你救回帳號」，直接忽略，幾乎都是詐騙。",
+        ]),
+        ("h2", "不要只靠一個平台"),
+        ("p", "再小心的帳號，也可能被誤判。所以值得把一部分的受眾留在自己手上：一個簡單的網站、一份 email 名單、再加一個平台。一扇門關了，其他的還開著。"),
+        ("mission", "autopilot"),
     ],
 })
